@@ -27,7 +27,7 @@ const roleHarvester = {
             }
         } else {
             //通过存储器判断新房间，先进行修理,采集器只修容器
-            if (!creep.repairByTheWay) {
+            if (!creep.repairClosest()) {
                 // 只传递给最近的容器
                 container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
@@ -41,13 +41,7 @@ const roleHarvester = {
                 }
                 // 临时性的功能，在新地图，充当建造者
                 else {
-                    var target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
-                    // 如果没有建设任务
-                    if (target) {
-                        if (creep.build(target) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
-                        }
-                    }
+                    creep.buildClosest()
                 }
             } else {
                 // 只传递给最近的容器

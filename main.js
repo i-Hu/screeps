@@ -102,10 +102,10 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 2) {
+    if (upgraders2.length < 1) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
-        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
+        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
             {
                 memory: {role: 'upgrader', room: 'W6N49'},
                 directions: [BOTTOM]
@@ -122,7 +122,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 1) {
+    if (upgraders.length < 0) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -159,7 +159,7 @@ module.exports.loop = function () {
                 }
                 var newName = 'Transfer' + container.id;
                 console.log(spawnName + 'Spawning new transfer: ' + newName);
-                Game.spawns[spawnName].spawnCreep([WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns[spawnName].spawnCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
                     {
                         memory: {role: 'transfer', containerId: container.id},
                         directions: [BOTTOM]
@@ -181,7 +181,7 @@ module.exports.loop = function () {
                     var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]
                 } else {
                     spawnName = 'Spawn2';
-                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
+                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                 }
                 var newName = 'Harvester' + source.id;
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
