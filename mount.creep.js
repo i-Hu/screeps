@@ -54,14 +54,14 @@ const creepExtension = {
     },
     fillContainer() {
         // 只传递给最近的容器
-        container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+        const container = this.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
                 // 所有能量的总容量
                 _.sum(structure.store) < 2000
         });
         if (container) {
-            if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
+            if (this.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
             }
             return true
         }
