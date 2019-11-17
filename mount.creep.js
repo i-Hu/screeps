@@ -158,7 +158,7 @@ const creepExtension = {
         return false
     },
     buildClosest() {
-        let target = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+        const target = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
         if (target) {
             if (this.build(target) === ERR_NOT_IN_RANGE) {
                 this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});

@@ -27,10 +27,12 @@ const roleHarvester = {
             }
         } else {
             //通过存储器判断新房间，先进行修理,采集器只修容器
-            if (!creep.repairClosest()) {
-                if (!creep.fillContainer()) {
-                    // 临时性的功能，在新地图，充当建造者
-                    creep.buildClosest()
+            if (!creep.room.storage) {
+                if (!creep.repairClosest()) {
+                    if (!creep.fillContainer()) {
+                        // 临时性的功能，在新地图，充当建造者
+                        creep.buildClosest()
+                    }
                 }
             } else {
                 creep.fillContainer()
