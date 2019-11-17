@@ -10,7 +10,7 @@
 var roleAttacker = {
     run: function (creep) {
         // 如果不在防御的房间，就前往房间
-        if (creep.hits < creep.hitsMax) {
+        if (creep.hits < creep.hitsMax*0.5) {
             creep.moveTo(new RoomPosition(25, 25, 'W9N49'))
         } else {
             if (creep.room.name !== 'W8N49') {
