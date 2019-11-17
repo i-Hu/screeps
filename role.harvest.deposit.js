@@ -10,7 +10,26 @@ var roleHarvestDeposit = {
         }
 
         if (!creep.memory.charge) {
-            creep.harvestDeposit()
+            const droppedResource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+                filter: i => i.resourceType === RESOURCE_SILICON
+            });
+            if (droppedResource) {
+                if (creep.pickup(droppedResource) === ERR_NOT_IN_RANGE) {
+                    creep.moveTo(droppedResource, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+
+            } else {
+                const tombstone = creep.pos.findClosestByPath(FIND_TOMBSTONES, {
+                    filter: (i) => i.store[RESOURCE_SILICON] > 0
+                });
+                if (tombstone) {
+                    if (creep.withdraw(tombstone, RESOURCE_SILICON) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                } else {
+                    creep.harvestDeposit()
+                }
+            }
         } else {
             const storage = Game.rooms['W9N49'].storage;
             if (creep.transfer(storage, RESOURCE_SILICON) === ERR_NOT_IN_RANGE) {
