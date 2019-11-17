@@ -10,6 +10,7 @@ var roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
+        let container;
         if (creep.memory.charge && creep.store[RESOURCE_ENERGY] === 0) {
             creep.memory.charge = false;
             creep.say('🔄 harvest');
@@ -20,7 +21,7 @@ var roleHarvester = {
         }
 
         if (!creep.memory.charge) {
-            var source = Game.getObjectById(creep.memory.sourceId);
+            const source = Game.getObjectById(creep.memory.sourceId);
             if (creep.harvest(source) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
@@ -28,7 +29,7 @@ var roleHarvester = {
             //通过存储器判断新房间，先进行修理,采集器只修容器
             if (!creep.room.storage) {
                 const brokens = creep.pos.findInRange(FIND_STRUCTURES, 3,{
-                    filter: object => object.hits < object.hitsMax && object.id !== '5dce71e21543d3e887069b07' // 20191117 容器消失后删除
+                    filter: object => object.hits < object.hitsMax
                 });
                 brokens.sort((a, b) => a.hits - b.hits);
                 if (brokens.length > 0) {
@@ -37,10 +38,10 @@ var roleHarvester = {
                     }
                 } else {
                     // 只传递给最近的容器
-                    var container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                         filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
                             // 所有能量的总容量
-                            _.sum(structure.store) < 2000 && structure.id !== '5dce71e21543d3e887069b07' // 20191117 容器消失后删除
+                            _.sum(structure.store) < 2000
                     });
                     if (container) {
                         if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
@@ -60,7 +61,7 @@ var roleHarvester = {
                 }
             } else {
                 // 只传递给最近的容器
-                var container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
                         // 所有能量的总容量
                         _.sum(structure.store) < 2000

@@ -64,7 +64,7 @@ const creepExtension = {
             filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
                 i.store[RESOURCE_ENERGY] > 1000)
         });
-        if (containers.length >0) {
+        if (containers.length > 0) {
             containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
             if (this.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
@@ -82,5 +82,18 @@ const creepExtension = {
             return true
         }
         return false
+    },
+    harvestDeposit() {
+        if (this.room.name !== 'W8N50') {
+            this.moveTo(new RoomPosition(5, 42, 'W8N50'))
+        } else {
+            const deposit = Game.getObjectById('5dd0b9a7eb92884f376941fa');
+            if (deposit) {
+                if (this.harvest(deposit) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
+                    this.moveTo(deposit, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            }
+        }
+
     }
 };

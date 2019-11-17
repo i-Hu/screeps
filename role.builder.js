@@ -23,28 +23,34 @@ var roleBuilder = {
         }
 
         if (creep.memory.building) {
-            var targets = [];
-            // 根据拥有的房间查询对应的建设基地
-            for (var roomName in Game.rooms) {
-                Game.rooms[roomName].find(FIND_CONSTRUCTION_SITES).forEach(i => targets.push(i))
-            }
-            var target = targets[0];
+            let target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
             if (target) {
                 if (creep.build(target) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
-            }
-            // 如果没有建设任务,顺路维修>充能
-            else {
-                const brokens = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-                    filter: object => object.hits < object.hitsMax && object.hits < 300000
-                });
-                if (brokens.length > 0) {
-                    if (creep.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(brokens[0]);
+            } else {
+                let targets = [];
+                // 根据拥有的房间查询对应的建设基地
+                for (let roomName in Game.rooms) {
+                    Game.rooms[roomName].find(FIND_CONSTRUCTION_SITES).forEach(i => targets.push(i))
+                }
+                if (targets.length > 0) {
+                    if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     }
-                } else {
-                    roleUpgrader.run(creep);
+                }
+                // 如果没有建设任务,顺路维修>充能
+                else {
+                    const brokens = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+                        filter: object => object.hits < object.hitsMax && object.hits < 300000
+                    });
+                    if (brokens.length > 0) {
+                        if (creep.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
+                            creep.moveTo(brokens[0]);
+                        }
+                    } else {
+                        roleUpgrader.run(creep);
+                    }
                 }
             }
         } else {
