@@ -28,33 +28,12 @@ const roleHarvester = {
         } else {
             //通过存储器判断新房间，先进行修理,采集器只修容器
             if (!creep.repairClosest()) {
-                // 只传递给最近的容器
-                container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
-                        // 所有能量的总容量
-                        _.sum(structure.store) < 2000
-                });
-                if (container) {
-                    if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
-                    }
-                }
-                // 临时性的功能，在新地图，充当建造者
-                else {
+                if (!creep.fillContainer()) {
+                    // 临时性的功能，在新地图，充当建造者
                     creep.buildClosest()
                 }
             } else {
-                // 只传递给最近的容器
-                container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                    filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
-                        // 所有能量的总容量
-                        _.sum(structure.store) < 2000
-                });
-                if (container) {
-                    if (creep.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
-                    }
-                }
+                creep.fillContainer()
             }
         }
     }
