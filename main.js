@@ -174,18 +174,17 @@ module.exports.loop = function () {
         Game.rooms[roomName].find(FIND_SOURCES, {
             filter: i => ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(i.room.name)
         }).forEach(function (source) {
+            let spawnName;
             if (!ownedSources.includes(source.id)) {
                 //根据是否是比较近的房间区分生产模块
                 if (['W9N49', 'W8N49'].includes(Game.getObjectById(source.id).room.name)) {
-                    var spawnName = 'Spawn1';
-                    var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]
+                    spawnName = 'Spawn1';
                 } else {
                     spawnName = 'Spawn2';
-                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                 }
-                var newName = 'Harvester' + source.id;
+                const newName = 'Harvester' + source.id;
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
-                Game.spawns[spawnName].spawnCreep(body, newName,
+                Game.spawns[spawnName].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
                     {
                         memory: {role: 'harvester', sourceId: source.id},
                         directions: [BOTTOM]
