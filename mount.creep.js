@@ -26,6 +26,15 @@ const creepExtension = {
     },
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
+        if (!this.getDroppedEnergy()) {
+            if (!this.getTombEnergy()) {
+                if (!this.getContainerEnergy()) {
+                    this.getStorageEnergy()
+                }
+            }
+        }
+    },
+    getDroppedEnergy() {
         var droppedResources = this.room.find(FIND_DROPPED_RESOURCES, {
             filter: i => i.resourceType === RESOURCE_ENERGY
         });
@@ -33,29 +42,45 @@ const creepExtension = {
             if (this.pickup(droppedResources[0]) === ERR_NOT_IN_RANGE) {
                 this.moveTo(droppedResources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
-        } else {
-            var tombstone = this.pos.findClosestByPath(FIND_TOMBSTONES, {
-                filter: (i) => i.store[RESOURCE_ENERGY] > 0
-            });
-            if (tombstone) {
-                if (this.withdraw(tombstone, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            } else {
-                // 最近的容器
-                var containers = this.room.find(FIND_STRUCTURES, {
-                    filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
-                        i.store[RESOURCE_ENERGY] > 500)
-                });
-                var container = containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY])[0];
-                //没有合适的容器，从储存器取
-                if (!container) {
-                    container = this.room.storage;
-                }
-                if (this.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
+            return true
         }
+        return false
+    },
+    getTombEnergy() {
+        var tombstone = this.pos.findClosestByPath(FIND_TOMBSTONES, {
+            filter: (i) => i.store[RESOURCE_ENERGY] > 0
+        });
+        if (tombstone) {
+            if (this.withdraw(tombstone, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
+            return true
+        }
+        return false
+    },
+    getContainerEnergy() {
+        // 能量最多的容器
+        var containers = this.room.find(FIND_STRUCTURES, {
+            filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
+                i.store[RESOURCE_ENERGY] > 500)
+        });
+        containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
+        if (containers) {
+            if (this.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
+            return true
+        }
+        return false
+    },
+    getStorageEnergy() {
+        var storage = this.room.storage;
+        if (storage) {
+            if (this.withdraw(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
+            return true
+        }
+        return false
     }
 };
