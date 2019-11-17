@@ -132,7 +132,7 @@ const creepExtension = {
     },
     repairByTheWay() {
         const brokens = this.pos.findInRange(FIND_STRUCTURES, 3, {
-            filter: object => object.hits < object.hitsMax && object.hits < 300000
+            filter: object => object.hits < object.hitsMax && object.hits < 300000 && object.id !== '5dcab1784d41cc5719500983' && object.id !== '5dd0c29c7f35a8865c3df05b'
         });
         if (brokens.length > 0) {
             if (this.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
