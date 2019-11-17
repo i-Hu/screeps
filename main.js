@@ -1,11 +1,15 @@
-var roleHarvester = require('role.harvester');
-var roleBuilder = require('role.builder');
-var roleUpgrader = require('role.upgrader');
-var roleTransfer = require('role.transfer');
-var roleReserver = require('role.reserver');
-var roleClaimer = require('role.claimer');
-var roleAttacker = require('role.attacker');
+var roleHarvester = require('./role.harvester');
+var roleBuilder = require('./role.builder');
+var roleUpgrader = require('./role.upgrader');
+var roleTransfer = require('./role.transfer');
+var roleReserver = require('./role.reserver');
+var roleClaimer = require('./role.claimer');
+var roleAttacker = require('./role.attacker');
+var mount = require('./mount');
 module.exports.loop = function () {
+    // 挂载所有拓展
+    mount();
+
     // 内存清理
     for (var name in Memory.creeps) {
         if (!Game.creeps[name]) {
@@ -85,20 +89,20 @@ module.exports.loop = function () {
     var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     var builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 2) {
+    if (upgraders2.length < 1) {
         var newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
-        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY,CARRY, MOVE, MOVE], newName,
+        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
             {
                 memory: {role: 'upgrader', room: 'W6N49'},
                 directions: [BOTTOM]
             });
     }
     // 保持建设者数量
-    if (builders2.length < 0) {
+    if (builders2.length < 3) {
         var newName = 'Builder' + Game.time;
-        console.log('Spawn1 Spawning new builder: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+        console.log('Spawn2 Spawning new builder: ' + newName);
+        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'builder', room: 'W6N49'},
                 directions: [BOTTOM]
@@ -115,7 +119,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders.length < 1) {
+    if (builders.length < 0) {
         var newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,

@@ -6,8 +6,6 @@
  * var mod = require('role.harvesterToContainer');
  * mod.thing == 'a thing'; // true
  */
-var roleBuilder = require('role.builder');
-
 var roleHarvester = {
 
     /** @param {Creep} creep **/
