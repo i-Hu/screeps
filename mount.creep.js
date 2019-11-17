@@ -1,7 +1,7 @@
 // 将拓展签入 Creep 原型
 module.exports = function () {
     _.assign(Creep.prototype, creepExtension)
-}
+};
 
 // 自定义的 Creep 的拓展
 const creepExtension = {
@@ -35,7 +35,7 @@ const creepExtension = {
         }
     },
     getDroppedEnergy() {
-        var droppedResources = this.room.find(FIND_DROPPED_RESOURCES, {
+        const droppedResources = this.room.find(FIND_DROPPED_RESOURCES, {
             filter: i => i.resourceType === RESOURCE_ENERGY
         });
         if (droppedResources.length > 0) {
@@ -47,7 +47,7 @@ const creepExtension = {
         return false
     },
     getTombEnergy() {
-        var tombstone = this.pos.findClosestByPath(FIND_TOMBSTONES, {
+        const tombstone = this.pos.findClosestByPath(FIND_TOMBSTONES, {
             filter: (i) => i.store[RESOURCE_ENERGY] > 0
         });
         if (tombstone) {
@@ -60,12 +60,12 @@ const creepExtension = {
     },
     getContainerEnergy() {
         // 能量最多的容器
-        var containers = this.room.find(FIND_STRUCTURES, {
+        const containers = this.room.find(FIND_STRUCTURES, {
             filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
-                i.store[RESOURCE_ENERGY] > 500)
+                i.store[RESOURCE_ENERGY] > 1000)
         });
-        containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
-        if (containers) {
+        if (containers.length >0) {
+            containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
             if (this.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
@@ -74,7 +74,7 @@ const creepExtension = {
         return false
     },
     getStorageEnergy() {
-        var storage = this.room.storage;
+        const storage = this.room.storage;
         if (storage) {
             if (this.withdraw(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});

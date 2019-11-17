@@ -26,14 +26,7 @@ var roleUpgrader = {
                 creep.moveTo(controller, {visualizePathStyle: {stroke: '#ffffff'}});
             }
         } else {
-            var source = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-                filter: object => (object.structureType === STRUCTURE_STORAGE ||
-                    object.structureType === STRUCTURE_CONTAINER) &&
-                    object.store[RESOURCE_ENERGY] > 0
-            });
-            if (creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            creep.getStorageEnergy()
         }
     }
 };
