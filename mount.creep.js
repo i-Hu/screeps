@@ -6,16 +6,51 @@ module.exports = function () {
 // 自定义的 Creep 的拓展
 const creepExtension = {
     // 自定义敌人检测
-    checkEnemy() {
-        // 代码实现...
+    isEnemy() {
+        return this.room.find(FIND_HOSTILE_CREEPS).length > 0
     },
     // 填充所有 spawn 和 extension
-    fillSpawnEngry() {
-        // 代码实现...
+    fillSpawnEnergy() {
+        var target = this.pos.findClosestByPath(FIND_STRUCTURES, {
+            filter: (structure) => (structure.structureType === STRUCTURE_EXTENSION ||
+                structure.structureType === STRUCTURE_SPAWN) &&
+                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+        });
+        if (target) {
+            if (this.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            return true
+        }
+        return false
     },
     // 填充所有 tower
     fillTower() {
-        // 代码实现...
+        const towers = this.room.find(FIND_STRUCTURES, {
+            filter: (structure) => structure.structureType === STRUCTURE_TOWER &&
+                structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 500
+        });
+        if (towers.length > 0) {
+            if (this.transfer(towers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            return true
+        }
+        return false
+    },
+    //填充所属房间的storage
+    fillStorage() {
+        if (['W9N49', 'W8N49'].includes(this.room.name)) {
+            const storage = Game.rooms['W9N49'].storage;
+            if (this.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+        } else {
+            const storage = Game.rooms['W6N49'].storage;
+            if (this.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+        }
     },
     // 其他更多自定义拓展
     isFull() {
@@ -62,7 +97,7 @@ const creepExtension = {
         // 能量最多的容器
         const containers = this.room.find(FIND_STRUCTURES, {
             filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
-                i.store[RESOURCE_ENERGY] > 1000)
+                i.store[RESOURCE_ENERGY] > 500)
         });
         if (containers.length > 0) {
             containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
