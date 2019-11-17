@@ -29,7 +29,7 @@ var roleHarvester = {
             //通过存储器判断新房间，先进行修理,采集器只修容器
             if (!creep.room.storage) {
                 const brokens = creep.pos.findInRange(FIND_STRUCTURES, 3,{
-                    filter: object => object.hits < object.hitsMax
+                    filter: object => object.hits < object.hitsMax && object.structureType === STRUCTURE_CONTAINER && object.id !== '5dcab1784d41cc5719500983' && object.id !== '5dd0c29c7f35a8865c3df05b'
                 });
                 brokens.sort((a, b) => a.hits - b.hits);
                 if (brokens.length > 0) {
