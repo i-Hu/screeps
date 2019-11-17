@@ -102,7 +102,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 1) {
+    if (upgraders2.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -147,8 +147,8 @@ module.exports.loop = function () {
     for (let i in Game.rooms) {
         Game.rooms[i].find(FIND_STRUCTURES, {
             //对有存储能量的容器生成transfer
-            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 100 &&
-                ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(structure.room.name)
+            filter: (i) => i.structureType === STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 500 &&
+                ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(i.room.name)
         }).forEach(function (container) {
             if (!ownedContainers.includes(container.id)) {
                 //根据是否是比较近的房间区分生产模块
@@ -159,7 +159,7 @@ module.exports.loop = function () {
                 }
                 var newName = 'Transfer' + container.id;
                 console.log(spawnName + 'Spawning new transfer: ' + newName);
-                Game.spawns[spawnName].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns[spawnName].spawnCreep([WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
                     {
                         memory: {role: 'transfer', containerId: container.id},
                         directions: [BOTTOM]

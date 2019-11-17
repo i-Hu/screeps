@@ -29,12 +29,14 @@ var roleTransfer = {
                 creep.getEnergy()
             }
         } else {
-            // 生产>塔>存储
-            if(!creep.fillSpawnEnergy()){
-                if(!creep.fillTower()){
-                    creep.fillStorage()
+            // 维修>生产>塔>存储
+            // if (!creep.repairByTheWay()) {
+                if (!creep.fillSpawnEnergy()) {
+                    if (!creep.fillTower()) {
+                        creep.fillStorage()
+                    }
                 }
-            }
+            // }
         }
     }
 };

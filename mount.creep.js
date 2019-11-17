@@ -129,6 +129,17 @@ const creepExtension = {
                 }
             }
         }
-
+    },
+    repairByTheWay() {
+        const brokens = this.pos.findInRange(FIND_STRUCTURES, 3, {
+            filter: object => object.hits < object.hitsMax && object.hits < 300000
+        });
+        if (brokens.length > 0) {
+            if (this.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
+                this.moveTo(brokens[0]);
+            }
+            return true
+        }
+        return false
     }
 };

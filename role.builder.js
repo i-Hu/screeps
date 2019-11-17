@@ -41,14 +41,7 @@ var roleBuilder = {
                 }
                 // 如果没有建设任务,顺路维修>充能
                 else {
-                    const brokens = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-                        filter: object => object.hits < object.hitsMax && object.hits < 300000
-                    });
-                    if (brokens.length > 0) {
-                        if (creep.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(brokens[0]);
-                        }
-                    } else {
+                    if (!creep.repairByTheWay()) {
                         roleUpgrader.run(creep);
                     }
                 }
