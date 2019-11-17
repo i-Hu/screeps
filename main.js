@@ -85,7 +85,7 @@ module.exports.loop = function () {
     var upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     var builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 1) {
+    if (upgraders2.length < 2) {
         var newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, CARRY,CARRY, MOVE, MOVE], newName,
@@ -95,7 +95,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders2.length < 1) {
+    if (builders2.length < 0) {
         var newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -155,18 +155,20 @@ module.exports.loop = function () {
     harvesters.forEach((i) => ownedSources.push(i.memory.sourceId));
     for (var roomName in Game.rooms) {
         Game.rooms[roomName].find(FIND_SOURCES, {
-            filter: i => ['W9N49', 'W8N49', 'W7N49'].includes(i.room.name)
+            filter: i => ['W9N49', 'W8N49', 'W7N49', 'W6N49'].includes(i.room.name)
         }).forEach(function (source) {
             if (!ownedSources.includes(source.id)) {
                 //根据是否是比较近的房间区分生产模块
-                if (['W9N49', 'W8N49', 'W7N49'].includes(Game.getObjectById(source.id).room.name)) {
-                    var spawnName = 'Spawn1'
+                if (['W9N49', 'W8N49'].includes(Game.getObjectById(source.id).room.name)) {
+                    var spawnName = 'Spawn1';
+                    var body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE]
                 } else {
-                    spawnName = 'Spawn2'
+                    spawnName = 'Spawn2';
+                    body = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE]
                 }
                 var newName = 'Harvester' + source.id;
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
-                Game.spawns[spawnName].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns[spawnName].spawnCreep(body, newName,
                     {
                         memory: {role: 'harvester', sourceId: source.id},
                         directions: [BOTTOM]
