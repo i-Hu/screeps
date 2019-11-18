@@ -28,7 +28,7 @@ var roleHealer = {
                         creep.moveTo(target);
                     }
                 } else {
-                    creep.moveTo(new RoomPosition(31, 41, 'W8N50'))
+                    creep.moveTo(new RoomPosition(25, 5, 'W8N49'))
                 }
             }
         }

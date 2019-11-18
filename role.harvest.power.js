@@ -12,8 +12,8 @@ const roleHarvesterPower = {
         }
 
         if (!creep.memory.charge) {
-            const source = Game.getObjectById(creep.memory.sourceId);
-            if (creep.harvest(source) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
+            const source = Game.getObjectById('5dd27c04e0853aeafabf4588');
+            if (creep.pickup(source) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         } else {
