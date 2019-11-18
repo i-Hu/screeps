@@ -134,14 +134,10 @@ const creepExtension = {
         return false
     },
     harvestDeposit() {
-        if (this.room.name !== 'W8N50') {
-            this.moveTo(new RoomPosition(5, 42, 'W8N50'))
-        } else {
-            const deposit = Game.getObjectById('5dd0b9a7eb92884f376941fa');
-            if (deposit) {
-                if (this.harvest(deposit) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
-                    this.moveTo(deposit, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
+        const deposit = Game.getObjectById('5dcd47381a41fb70fd707ce0');
+        if (deposit) {
+            if (this.harvest(deposit) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
+                this.moveTo(deposit, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         }
     },

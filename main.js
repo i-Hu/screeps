@@ -62,19 +62,10 @@ module.exports.loop = function () {
     const transfers = _.filter(Game.creeps, (creep) => creep.memory.role === 'transfer');
     const reservers = _.filter(Game.creeps, (creep) => creep.memory.role === 'reserver');
     const attackers = _.filter(Game.creeps, (creep) => creep.memory.role === 'attacker');
-    const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
     const healers = _.filter(Game.creeps, (creep) => creep.memory.role === 'healer');
-    console.log('W9N49: Harvesters: ' + harvesters.length + ';Upgraders: ' + upgraders.length + '; Builders: ' + builders.length + ';Transfers: ' + transfers.length + ';Reservers: ' + reservers.length + ';Attackers: ' + attackers.length + ';harvestDeposits:' + harvestDeposits.length + ";healers：" + healers.length);
+    console.log('W9N49: Harvesters: ' + harvesters.length + ';Upgraders: ' + upgraders.length + '; Builders: ' + builders.length + ';Transfers: ' + transfers.length + ';Reservers: ' + reservers.length + ';Attackers: ' + attackers.length + ";healers：" + healers.length);
 
-    if (harvestDeposits.length < 1) {
-        newName = 'harvestDeposit' + Game.time;
-        console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {role: 'harvestDeposit', room: 'W9N49'},
-                directions: [TOP]
-            });
-    }
+
     // 保持宣称者数量
     let reserveRoom = [];
     reservers.forEach((i) => reserveRoom.push(i.memory.roomName));
@@ -104,7 +95,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 1) {
+    if (upgraders2.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -124,7 +115,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 0) {
+    if (upgraders.length < 1) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -134,7 +125,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders.length < 0) {
+    if (builders.length < 1) {
         newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -186,10 +177,10 @@ module.exports.loop = function () {
                 //根据是否是比较近的房间区分生产模块
                 if (['W9N49', 'W8N49'].includes(Game.getObjectById(source.id).room.name)) {
                     spawnName = 'Spawn1';
-                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                 } else {
                     spawnName = 'Spawn2';
-                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE]
                 }
                 const newName = 'Harvester' + source.id;
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
@@ -201,8 +192,8 @@ module.exports.loop = function () {
             }
         })
     }
-
-    if (attackers.length < 1) {
+    //防止空指针异常
+    if (Game.rooms['W8N49'] && Game.rooms['W8N49'].find(FIND_HOSTILE_CREEPS).length > 0 && attackers.length < 1) {
         newName = 'Attacker' + Game.time;
         console.log('Spawning new attacker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
@@ -216,13 +207,22 @@ module.exports.loop = function () {
         console.log('Spawn1 Spawning new healer: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
-                memory: {role: 'healer', room: 'W9N49'},
+                memory: {role: 'healer', room: 'W8N49'},
                 directions: [TOP]
             });
     }
-
+    // const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
+    // if (harvestDeposits.length < 0) {
+    //     newName = 'harvestDeposit' + Game.time;
+    //     console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
+    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+    //         {
+    //             memory: {role: 'harvestDeposit', room: 'W9N49'},
+    //             directions: [TOP]
+    //         });
+    // }
     // const harvestPower = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestPower');
-    // if (harvestPower.length < 2) {
+    // if (harvestPower.length < 0) {
     //     newName = 'harvestPower' + Game.time;
     //     console.log('Spawn1 Spawning new harvestPower: ' + newName);
     //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
