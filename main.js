@@ -41,7 +41,7 @@ module.exports.loop = function () {
                     tower.heal(creeps[0]);
                 } else {
                     let structures = tower.room.find(FIND_STRUCTURES, {
-                        filter: (i) => i.hits < i.hitsMax && i.hits < 25000
+                        filter: (i) => i.hits < i.hitsMax && i.hits < 250000
                     });
                     // 先修理血少的
                     structures.sort((a, b) => a.hits - b.hits);
@@ -72,14 +72,13 @@ module.exports.loop = function () {
                 directions: [TOP]
             });
     }
-    // // 保持宣称者数量
+    // 保持宣称者数量
     let reserveRoom = [];
-
     reservers.forEach((i) => reserveRoom.push(i.memory.roomName));
     ['W7N49', 'W8N49', 'W5N49'].forEach(roomName => {
         // 防止空指针报错
-        if (Game.rooms[roomName] && Game.rooms[roomName].controller.reservation && Game.rooms[roomName].controller.reservation['ticksToEnd'] < 4000 && !reserveRoom.includes(roomName)) {
-            newName = 'Reserver' + Game.time;
+        if (!Game.rooms[roomName] || !Game.rooms[roomName].controller.reservation || (Game.rooms[roomName].controller.reservation['ticksToEnd'] < 4000 && !reserveRoom.includes(roomName))) {
+            newName = 'Reserver' + roomName;
             let spawnName;
             if (roomName === 'W8N49') {
                 spawnName = 'Spawn1'
@@ -102,7 +101,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 1) {
+    if (upgraders2.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -112,7 +111,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders2.length < 1) {
+    if (builders2.length < 0) {
         newName = 'Builder' + Game.time;
         console.log('Spawn2 Spawning new builder: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -132,7 +131,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders.length < 1) {
+    if (builders.length < 0) {
         newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -147,19 +146,23 @@ module.exports.loop = function () {
     for (let i in Game.rooms) {
         Game.rooms[i].find(FIND_STRUCTURES, {
             //对有存储能量的容器生成transfer
-            filter: (i) => i.structureType === STRUCTURE_CONTAINER && i.store[RESOURCE_ENERGY] > 500 &&
-                ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(i.room.name)
+            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > -1 &&
+                ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(structure.room.name)
         }).forEach(function (container) {
+            let spawnName;
+            let body;
             if (!ownedContainers.includes(container.id)) {
                 //根据是否是比较近的房间区分生产模块
                 if (['W9N49', 'W8N49'].includes(Game.getObjectById(container.id).room.name)) {
-                    var spawnName = 'Spawn1';
+                    spawnName = 'Spawn1';
+                    body=[CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
                 } else {
-                    spawnName = 'Spawn2'
+                    spawnName = 'Spawn2';
+                    body=[CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
                 }
                 var newName = 'Transfer' + container.id;
                 console.log(spawnName + 'Spawning new transfer: ' + newName);
-                Game.spawns[spawnName].spawnCreep([WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns[spawnName].spawnCreep(body, newName,
                     {
                         memory: {role: 'transfer', containerId: container.id},
                         directions: [BOTTOM]
@@ -175,16 +178,19 @@ module.exports.loop = function () {
             filter: i => ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(i.room.name)
         }).forEach(function (source) {
             let spawnName;
+            let body;
             if (!ownedSources.includes(source.id)) {
                 //根据是否是比较近的房间区分生产模块
                 if (['W9N49', 'W8N49'].includes(Game.getObjectById(source.id).room.name)) {
                     spawnName = 'Spawn1';
+                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
                 } else {
                     spawnName = 'Spawn2';
+                    body = [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
                 }
                 const newName = 'Harvester' + source.id;
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
-                Game.spawns[spawnName].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], newName,
+                Game.spawns[spawnName].spawnCreep(body, newName,
                     {
                         memory: {role: 'harvester', sourceId: source.id},
                         directions: [BOTTOM]
@@ -193,7 +199,7 @@ module.exports.loop = function () {
         })
     }
 
-    if (attackers.length < 1) {
+    if (Game.rooms['W8N49'] && Game.rooms['W8N49'].find(FIND_HOSTILE_CREEPS).length > 0 && attackers.length < 1) {
         newName = 'Attacker' + Game.time;
         console.log('Spawning new attacker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,

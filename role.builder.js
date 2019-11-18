@@ -36,7 +36,7 @@ var roleBuilder = {
                 }
                 // 如果没有建设任务,顺路维修>充能
                 else {
-                    if (!creep.repairByTheWay()) {
+                    if (!creep.repairClosest()) {
                         roleUpgrader.run(creep);
                     }
                 }

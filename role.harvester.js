@@ -10,7 +10,6 @@ const roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        let container;
         if (creep.memory.charge && creep.store[RESOURCE_ENERGY] === 0) {
             creep.memory.charge = false;
             creep.say('🔄 harvest');
@@ -26,16 +25,11 @@ const roleHarvester = {
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
             }
         } else {
-            //通过存储器判断新房间，先进行修理,采集器只修容器
-            if (!creep.room.storage) {
-                if (!creep.repairClosest()) {
-                    if (!creep.fillContainer()) {
-                        // 临时性的功能，在新地图，充当建造者
-                        creep.buildClosest()
-                    }
+            if (!creep.repairClosest()) {
+                if (!creep.fillContainer()) {
+                    // 临时性的功能，在新地图，充当建造者
+                    creep.buildClosest()
                 }
-            } else {
-                creep.fillContainer()
             }
         }
     }
