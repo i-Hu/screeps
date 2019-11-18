@@ -6,6 +6,7 @@ const roleReserver = require('./role.reserver');
 const roleClaimer = require('./role.claimer');
 const roleAttacker = require('./role.attacker');
 const roleHarvestDeposit = require('./role.harvest.deposit');
+const roleHarvesterPower = require('./role.harvest.power');
 const roleHealer = require('./role.healer');
 const mount = require('./mount');
 module.exports.loop = function () {
@@ -63,7 +64,7 @@ module.exports.loop = function () {
     const attackers = _.filter(Game.creeps, (creep) => creep.memory.role === 'attacker');
     const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
     const healers = _.filter(Game.creeps, (creep) => creep.memory.role === 'healer');
-    console.log('W9N49: Harvesters: ' + harvesters.length + ';Upgraders: ' + upgraders.length + '; Builders: ' + builders.length + ';Transfers: ' + transfers.length + ';Reservers: ' + reservers.length + ';Attackers: ' + attackers.length + ';harvestDeposits:' + harvestDeposits.length+ ";healers：" + healers.length);
+    console.log('W9N49: Harvesters: ' + harvesters.length + ';Upgraders: ' + upgraders.length + '; Builders: ' + builders.length + ';Transfers: ' + transfers.length + ';Reservers: ' + reservers.length + ';Attackers: ' + attackers.length + ';harvestDeposits:' + harvestDeposits.length + ";healers：" + healers.length);
 
     if (harvestDeposits.length < 1) {
         newName = 'harvestDeposit' + Game.time;
@@ -201,7 +202,7 @@ module.exports.loop = function () {
         })
     }
 
-    if (attackers.length < 4) {
+    if (attackers.length < 1) {
         newName = 'Attacker' + Game.time;
         console.log('Spawning new attacker: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
@@ -210,7 +211,7 @@ module.exports.loop = function () {
                 directions: [BOTTOM]
             });
     }
-    if (healers.length < 10) {
+    if (healers.length < 0) {
         newName = 'healer' + Game.time;
         console.log('Spawn1 Spawning new healer: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -218,13 +219,17 @@ module.exports.loop = function () {
                 memory: {role: 'healer', room: 'W9N49'},
                 directions: [TOP]
             });
-        if (healers.length < 8) {
-            Game.spawns['Spawn2'].spawnCreep([HEAL, HEAL, HEAL, HEAL, MOVE, MOVE, MOVE, MOVE], newName,
-                {
-                    memory: {role: 'healer', room: 'W9N49'},
-                    directions: [BOTTOM]
-                });
-        }
+    }
+
+    const harvestPower = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestPower');
+    if (harvestPower.length < 3) {
+        newName = 'harvestPower' + Game.time;
+        console.log('Spawn1 Spawning new harvestPower: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            {
+                memory: {role: 'harvestPower', room: 'W9N49'},
+                directions: [TOP]
+            });
     }
     for (name in Game.creeps) {
         let creep = Game.creeps[name];
@@ -254,6 +259,9 @@ module.exports.loop = function () {
         }
         if (creep.memory.role === 'healer') {
             roleHealer.run(creep)
+        }
+        if (creep.memory.role === 'harvestPower') {
+            roleHarvesterPower.run(creep)
         }
     }
 };
