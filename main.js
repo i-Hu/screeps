@@ -124,7 +124,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 1) {
+    if (upgraders.length < 0) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -221,16 +221,16 @@ module.exports.loop = function () {
             });
     }
 
-    const harvestPower = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestPower');
-    if (harvestPower.length < 3) {
-        newName = 'harvestPower' + Game.time;
-        console.log('Spawn1 Spawning new harvestPower: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {role: 'harvestPower', room: 'W9N49'},
-                directions: [TOP]
-            });
-    }
+    // const harvestPower = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestPower');
+    // if (harvestPower.length < 2) {
+    //     newName = 'harvestPower' + Game.time;
+    //     console.log('Spawn1 Spawning new harvestPower: ' + newName);
+    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+    //         {
+    //             memory: {role: 'harvestPower', room: 'W9N49'},
+    //             directions: [TOP]
+    //         });
+    // }
     for (name in Game.creeps) {
         let creep = Game.creeps[name];
         if (creep.memory.role === 'harvester') {
