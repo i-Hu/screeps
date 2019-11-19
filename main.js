@@ -44,7 +44,7 @@ module.exports.loop = function () {
                     tower.heal(creeps[0]);
                 } else {
                     let structures = tower.room.find(FIND_STRUCTURES, {
-                        filter: (i) => i.hits < i.hitsMax && i.hits < 50000
+                        filter: (i) => i.hits < i.hitsMax && i.hits < 250000
                     });
                     // 先修理血少的
                     structures.sort((a, b) => a.hits - b.hits);

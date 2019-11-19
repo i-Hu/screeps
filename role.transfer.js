@@ -34,13 +34,13 @@ var roleTransfer = {
             }
         } else {
             // 维修>生产>塔>存储
-            // if (!creep.repairClosest()) {
+            if (!creep.repairClosest()) {
                 if (!creep.fillSpawnEnergy()) {
                     if (!creep.fillTower()) {
                         creep.fillStorage()
                     }
                 }
-            // }
+            }
         }
     }
 };
