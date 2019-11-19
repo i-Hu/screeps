@@ -8,6 +8,7 @@ const roleAttacker = require('./role.attacker');
 const roleHarvestDeposit = require('./role.harvest.deposit');
 const roleHarvesterPower = require('./role.harvest.power');
 const roleHealer = require('./role.healer');
+const roleTransferLink = require('./role.transfer.link');
 const mount = require('./mount');
 module.exports.loop = function () {
     let roomName;
@@ -55,6 +56,11 @@ module.exports.loop = function () {
         })
     }
 
+    //link传输
+    let linkFrom = [Game.getObjectById('5dd3f0315eff015433cf62b8'), Game.getObjectById('5dd3ea0ce1f42309fea19eaa')];
+    let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
+    linkFrom.forEach(i => i.transferEnergy(linkTo));
+
     // 显示各兵种数量
     const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W9N49');
     const builders = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W9N49');
@@ -65,6 +71,14 @@ module.exports.loop = function () {
     const healers = _.filter(Game.creeps, (creep) => creep.memory.role === 'healer');
     console.log('W9N49: Harvesters: ' + harvesters.length + ';Upgraders: ' + upgraders.length + '; Builders: ' + builders.length + ';Transfers: ' + transfers.length + ';Reservers: ' + reservers.length + ';Attackers: ' + attackers.length + ";healers：" + healers.length);
 
+    // 核心传递者
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd2a406d75e52445a1fa512').length < 1) {
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], 'transfer1',
+            {
+                memory: {role: 'transferLink', containerId: '5dd2a406d75e52445a1fa512'},
+                directions: [TOP]
+            });
+    }
 
     // 保持宣称者数量
     let reserveRoom = [];
@@ -115,7 +129,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 1) {
+    if (upgraders.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -140,7 +154,7 @@ module.exports.loop = function () {
     for (let i in Game.rooms) {
         Game.rooms[i].find(FIND_STRUCTURES, {
             //对有存储能量的容器生成transfer
-            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > -1 &&
+            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 500 &&
                 ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(structure.room.name)
         }).forEach(function (container) {
             let spawnName;
@@ -149,10 +163,10 @@ module.exports.loop = function () {
                 //根据是否是比较近的房间区分生产模块
                 if (['W9N49', 'W8N49'].includes(Game.getObjectById(container.id).room.name)) {
                     spawnName = 'Spawn1';
-                    body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+                    body = [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
                 } else {
                     spawnName = 'Spawn2';
-                    body = [CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE]
+                    body = [WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]
                 }
                 var newName = 'Transfer' + container.id;
                 console.log(spawnName + 'Spawning new transfer: ' + newName);
@@ -262,6 +276,9 @@ module.exports.loop = function () {
         }
         if (creep.memory.role === 'harvestPower') {
             roleHarvesterPower.run(creep)
+        }
+        if (creep.memory.role === 'transferLink') {
+            roleTransferLink.run(creep)
         }
     }
 };

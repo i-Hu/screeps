@@ -26,9 +26,11 @@ const roleHarvester = {
             }
         } else {
             if (!creep.repairClosest()) {
-                if (!creep.fillContainer()) {
-                    // 临时性的功能，在新地图，充当建造者
-                    creep.buildClosest()
+                if (!creep.fillLink()) {
+                    if (!creep.fillContainer()) {
+                        // 临时性的功能，在新地图，充当建造者
+                        creep.buildClosest()
+                    }
                 }
             }
         }

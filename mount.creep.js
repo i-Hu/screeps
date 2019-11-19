@@ -54,14 +54,29 @@ const creepExtension = {
     },
     fillContainer() {
         // 只传递给最近的容器
-        const container = this.pos.findClosestByPath(FIND_STRUCTURES, {
+        const containers = this.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
                 // 所有能量的总容量
                 _.sum(structure.store) < 2000
         });
-        if (container) {
-            if (this.transfer(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(container, {visualizePathStyle: {stroke: '#ffffff'}});
+        if (containers.length > 0) {
+            if (this.transfer(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            return true
+        }
+        return false
+    },
+    fillLink() {
+        // 只传递给最近的LINK
+        const links = this.pos.findInRange(FIND_STRUCTURES, 3, {
+            filter: (i) => i.structureType === STRUCTURE_LINK &&
+                // 所有能量的总容量
+                _.sum(i.store) < 800
+        });
+        if (links.length > 0) {
+            if (this.transfer(links[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(links[0], {visualizePathStyle: {stroke: '#ffffff'}});
             }
             return true
         }
