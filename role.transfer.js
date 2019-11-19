@@ -20,13 +20,17 @@ var roleTransfer = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            var container = Game.getObjectById(creep.memory.containerId);
-            if (container && container.store[RESOURCE_ENERGY] > 200) {
-                if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+            if (!creep.getDroppedEnergy()) {
+                if (!creep.getTombEnergy()) {
+                    var container = Game.getObjectById(creep.memory.containerId);
+                    if (container && container.store[RESOURCE_ENERGY] > 200) {
+                        if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                            creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        }
+                    } else {
+                        creep.getEnergy()
+                    }
                 }
-            } else {
-                creep.getEnergy()
             }
         } else {
             // 维修>生产>塔>存储

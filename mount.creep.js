@@ -100,7 +100,7 @@ const creepExtension = {
         }
     },
     getDroppedEnergy() {
-        const droppedResources = this.room.find(FIND_DROPPED_RESOURCES, {
+        const droppedResources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 3, {
             filter: i => i.resourceType === RESOURCE_ENERGY
         });
         if (droppedResources.length > 0) {
@@ -112,12 +112,12 @@ const creepExtension = {
         return false
     },
     getTombEnergy() {
-        const tombstone = this.pos.findClosestByPath(FIND_TOMBSTONES, {
+        const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3, {
             filter: (i) => i.store[RESOURCE_ENERGY] > 0
         });
-        if (tombstone) {
-            if (this.withdraw(tombstone, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
+        if (tombstones.length > 0) {
+            if (this.withdraw(tombstones[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(tombstones[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
             return true
         }
@@ -178,5 +178,11 @@ const creepExtension = {
             return true
         }
         return false
+    },
+    harvestSource() {
+        const source = Game.getObjectById(this.memory.sourceId);
+        if (this.harvest(source) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
+            this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
+        }
     }
 };
