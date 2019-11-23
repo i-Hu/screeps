@@ -72,7 +72,7 @@ const creepExtension = {
         const links = this.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: (i) => i.structureType === STRUCTURE_LINK &&
                 // 所有能量的总容量
-                _.sum(i.store) < 800
+                _.sum(i.store) < 750
         });
         if (links.length > 0) {
             if (this.transfer(links[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
@@ -84,10 +84,7 @@ const creepExtension = {
     },
     // 其他更多自定义拓展
     isFull() {
-        if (!this._isFull) {
-            this._isFull = _.sum(this.carry) === this.carryCapacity;
-        }
-        return this._isFull;
+        return this.store.getFreeCapacity() === 0;
     },
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
@@ -157,15 +154,22 @@ const creepExtension = {
         }
     },
     repairClosest() {
+        const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});
+        if (towers.length >0){
+            return false
+        }
         const brokens = this.pos.findInRange(FIND_STRUCTURES, 3, {
             // 容器的生命上限
             filter: object => object.hits < object.hitsMax && object.hits < 250000
         });
         if (brokens.length > 0) {
-            if (this.repair(brokens[0]) === ERR_NOT_IN_RANGE) {
+            const result = this.repair(brokens[0]);
+            if (result === ERR_NOT_IN_RANGE) {
                 this.moveTo(brokens[0]);
+                return true
+            }else if (result === OK){
+                return true
             }
-            return true
         }
         return false
     },
@@ -181,7 +185,7 @@ const creepExtension = {
     },
     harvestSource() {
         const source = Game.getObjectById(this.memory.sourceId);
-        if (this.harvest(source) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
+        if (this.harvest(source) === ERR_NOT_IN_RANGE ||this.harvest(source) ===  ERR_NOT_ENOUGH_RESOURCES) {
             this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
         }
     }
