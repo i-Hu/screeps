@@ -28,7 +28,12 @@ var roleTransfer = {
                             creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
                         }
                     } else {
-                        creep.getEnergy()
+                        if (creep.room.energyAvailable < 2000) {
+                            creep.getEnergy()
+                        }
+                        else{
+                            creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        }
                     }
                 }
             }
@@ -37,7 +42,7 @@ var roleTransfer = {
             if (!creep.repairClosest()) {
                 if (!creep.fillSpawnEnergy()) {
                     if (!creep.fillTower()) {
-                        if (!creep.fillLink()){
+                        if (!creep.fillLink()) {
                             creep.fillStorage()
                         }
                     }

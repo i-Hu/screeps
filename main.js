@@ -129,7 +129,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders2.length < 0) {
+    if (builders2.length < 1) {
         newName = 'Builder' + Game.time;
         console.log('Spawn2 Spawning new builder: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,

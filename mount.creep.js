@@ -69,7 +69,7 @@ const creepExtension = {
     },
     fillLink() {
         // 只传递给最近的LINK
-        const links = this.pos.findInRange(FIND_STRUCTURES, 3, {
+        const links = this.pos.findInRange(FIND_STRUCTURES, 5, {
             filter: (i) => i.structureType === STRUCTURE_LINK &&
                 // 所有能量的总容量
                 _.sum(i.store) < 750
@@ -91,7 +91,9 @@ const creepExtension = {
         if (!this.getDroppedEnergy()) {
             if (!this.getTombEnergy()) {
                 if (!this.getContainerEnergy()) {
-                    this.getStorageEnergy()
+                    if (!this.getLinkEnergy()) {
+                        this.getStorageEnergy()
+                    }
                 }
             }
         }
@@ -135,6 +137,20 @@ const creepExtension = {
         }
         return false
     },
+    getLinkEnergy() {
+        // 能量最多的容器
+        const links = this.room.find(FIND_STRUCTURES, {
+            filter: (i) => (i.structureType === STRUCTURE_LINK)
+        });
+        if (links.length > 0) {
+            links.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
+            if (this.withdraw(links[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(links[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
+            return true
+        }
+        return false
+    },
     getStorageEnergy() {
         const storage = this.room.storage;
         if (storage) {
@@ -155,7 +171,7 @@ const creepExtension = {
     },
     repairClosest() {
         const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});
-        if (towers.length >0){
+        if (towers.length > 0) {
             return false
         }
         const brokens = this.pos.findInRange(FIND_STRUCTURES, 3, {
@@ -167,7 +183,7 @@ const creepExtension = {
             if (result === ERR_NOT_IN_RANGE) {
                 this.moveTo(brokens[0]);
                 return true
-            }else if (result === OK){
+            } else if (result === OK) {
                 return true
             }
         }
@@ -185,7 +201,7 @@ const creepExtension = {
     },
     harvestSource() {
         const source = Game.getObjectById(this.memory.sourceId);
-        if (this.harvest(source) === ERR_NOT_IN_RANGE ||this.harvest(source) ===  ERR_NOT_ENOUGH_RESOURCES) {
+        if (this.harvest(source) === ERR_NOT_IN_RANGE || this.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
             this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
         }
     }
