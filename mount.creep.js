@@ -40,14 +40,15 @@ const creepExtension = {
     },
     //填充所属房间的storage
     fillStorage() {
+        let storage;
         if (['W9N49', 'W8N49'].includes(this.room.name)) {
-            const storage = Game.rooms['W9N49'].storage;
-            if (this.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
+            storage = Game.rooms['W9N49'].storage;
+
         } else {
-            const storage = Game.rooms['W6N49'].storage;
-            if (this.transfer(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            storage = Game.rooms['W6N49'].storage;
+        }
+        for (let name in this.store) {
+            if (this.transfer(storage, name) === ERR_NOT_IN_RANGE) {
                 this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
             }
         }
@@ -56,12 +57,14 @@ const creepExtension = {
         // 只传递给最近的容器
         const containers = this.pos.findInRange(FIND_STRUCTURES, 3, {
             filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
-                // 所有能量的总容量
+                // 所有资源的总容量
                 _.sum(structure.store) < 2000
         });
         if (containers.length > 0) {
-            if (this.transfer(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+            for (let name in this.store) {
+                if (this.transfer(containers[0], name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                }
             }
             return true
         }
@@ -140,7 +143,8 @@ const creepExtension = {
     getLinkEnergy() {
         // 能量最多的容器
         const links = this.room.find(FIND_STRUCTURES, {
-            filter: (i) => (i.structureType === STRUCTURE_LINK)
+            filter: (i) => (i.structureType === STRUCTURE_LINK &&
+                i.store[RESOURCE_ENERGY] > 500)
         });
         if (links.length > 0) {
             links.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
@@ -160,14 +164,6 @@ const creepExtension = {
             return true
         }
         return false
-    },
-    harvestDeposit() {
-        const deposit = Game.getObjectById('5dcd47381a41fb70fd707ce0');
-        if (deposit) {
-            if (this.harvest(deposit) === ERR_NOT_IN_RANGE || ERR_NOT_ENOUGH_RESOURCES) {
-                this.moveTo(deposit, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-        }
     },
     repairClosest() {
         const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});

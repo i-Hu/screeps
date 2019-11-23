@@ -6,9 +6,11 @@ const roleReserver = require('./role.reserver');
 const roleClaimer = require('./role.claimer');
 const roleAttacker = require('./role.attacker');
 const roleHarvestDeposit = require('./role.harvest.deposit');
+const roleHarvestZynthium = require('./role.harvest.zynthium');
 const roleHarvesterPower = require('./role.harvest.power');
 const roleHealer = require('./role.healer');
 const roleTransferLink = require('./role.transfer.link');
+const roleTransferMineral = require('./role.transfer.mineral');
 const mount = require('./mount');
 module.exports.loop = function () {
     let roomName;
@@ -90,6 +92,14 @@ module.exports.loop = function () {
                 directions: [BOTTOM]
             });
     }
+    //矿物
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1) {
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral1',
+            {
+                memory: {role: 'transferMineral', containerId: '5dd401c990946d17d1495ee5'},
+                directions: [TOP]
+            });
+    }
     // 保持宣称者数量
     let reserveRoom = [];
     reservers.forEach((i) => reserveRoom.push(i.memory.roomName));
@@ -129,7 +139,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders2.length < 1) {
+    if (builders2.length < 0) {
         newName = 'Builder' + Game.time;
         console.log('Spawn2 Spawning new builder: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -139,7 +149,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 2) {
+    if (upgraders.length < 1) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -149,7 +159,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders.length < 0) {
+    if (builders.length < 1) {
         newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -235,13 +245,23 @@ module.exports.loop = function () {
                 directions: [TOP]
             });
     }
+    const harvestZynthium = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestZynthium');
+    if (harvestZynthium.length < 1) {
+        newName = 'harvestZynthium' + Game.time;
+        console.log('Spawn1 Spawning new harvestZynthium: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            {
+                memory: {role: 'harvestZynthium', room: 'W9N49', sourceId: '5bbcb27c40062e4259e93a8c'},
+                directions: [TOP]
+            });
+    }
     // const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
     // if (harvestDeposits.length < 0) {
     //     newName = 'harvestDeposit' + Game.time;
     //     console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
-    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
     //         {
-    //             memory: {role: 'harvestDeposit', room: 'W9N49'},
+    //             memory: {role: 'harvestDeposit', room: 'W9N49',sourceId : '5dd94b670d3d43396b64b68f'},
     //             directions: [TOP]
     //         });
     // }
@@ -281,6 +301,9 @@ module.exports.loop = function () {
         if (creep.memory.role === 'harvestDeposit') {
             roleHarvestDeposit.run(creep);
         }
+        if (creep.memory.role === 'harvestZynthium') {
+            roleHarvestZynthium.run(creep);
+        }
         if (creep.memory.role === 'healer') {
             roleHealer.run(creep)
         }
@@ -288,12 +311,14 @@ module.exports.loop = function () {
             roleHarvesterPower.run(creep)
         }
         if (creep.memory.role === 'transferLink') {
-            if (creep.room.energyAvailable < 1350){
+            if (creep.room.energyAvailable < 1350) {
                 roleTransfer.run(creep)
-            }else{
+            } else {
                 roleTransferLink.run(creep)
             }
-
+        }
+        if (creep.memory.role === 'transferMineral') {
+            roleTransferMineral.run(creep)
         }
     }
 };
