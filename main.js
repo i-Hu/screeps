@@ -94,7 +94,7 @@ module.exports.loop = function () {
     }
     //矿物
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1) {
-        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral1',
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral'+Game.time,
             {
                 memory: {role: 'transferMineral', containerId: '5dd401c990946d17d1495ee5'},
                 directions: [TOP]
@@ -159,7 +159,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders.length < 1) {
+    if (builders.length < 0) {
         newName = 'Builder' + Game.time;
         console.log('Spawn1 Spawning new builder: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,

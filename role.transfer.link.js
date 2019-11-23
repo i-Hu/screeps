@@ -1,6 +1,6 @@
 var roleTransferLink = {
     run: function (creep) {
-        if (creep.memory.transfer && creep.store[RESOURCE_ENERGY] === 0) {
+        if (creep.memory.transfer && _.sum(creep.store) === 0) {
             creep.memory.transfer = false;
             creep.say('withdraw');
         }
@@ -11,14 +11,25 @@ var roleTransferLink = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            var container = Game.getObjectById(creep.memory.containerId);
-            if (container && container.store[RESOURCE_ENERGY] > 0) {
+            let container = Game.getObjectById(creep.memory.containerId);
+            if (container && container.store[RESOURCE_ENERGY] >= 300) {
                 if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                     creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
+            } else {
+                let container = creep.room.storage;
+                for (let name in container.store) {
+                    if (creep.withdraw(container, name) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                }
             }
         } else {
-            creep.fillStorage()
+            if (creep.store[RESOURCE_ENERGY] > 0 && creep.room.terminal.store[RESOURCE_ENERGY] > 10000) {
+                creep.fillStorage()
+            } else {
+                creep.fillTerminal()
+            }
         }
     }
 };

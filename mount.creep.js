@@ -53,6 +53,21 @@ const creepExtension = {
             }
         }
     },
+    //填充所属房间的terminal
+    fillTerminal() {
+        let terminal;
+        if (['W9N49', 'W8N49'].includes(this.room.name)) {
+            terminal = Game.rooms['W9N49'].terminal;
+
+        } else {
+            terminal = Game.rooms['W6N49'].terminal;
+        }
+        for (let name in this.store) {
+            if (this.transfer(terminal, name) === ERR_NOT_IN_RANGE) {
+                this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+        }
+    },
     fillContainer() {
         // 只传递给最近的容器
         const containers = this.pos.findInRange(FIND_STRUCTURES, 3, {
@@ -102,9 +117,7 @@ const creepExtension = {
         }
     },
     getDroppedEnergy() {
-        const droppedResources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 3, {
-            filter: i => i.resourceType === RESOURCE_ENERGY
-        });
+        const droppedResources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
         if (droppedResources.length > 0) {
             if (this.pickup(droppedResources[0]) === ERR_NOT_IN_RANGE) {
                 this.moveTo(droppedResources[0], {visualizePathStyle: {stroke: '#ffaa00'}});

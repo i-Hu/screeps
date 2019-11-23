@@ -23,12 +23,12 @@ var roleTransfer = {
             if (!creep.getDroppedEnergy()) {
                 if (!creep.getTombEnergy()) {
                     var container = Game.getObjectById(creep.memory.containerId);
-                    if (container && container.store[RESOURCE_ENERGY] >= 200) {
+                    if (container && container.store[RESOURCE_ENERGY] >= 600) {
                         if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                             creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
                         }
                     } else {
-                        if (creep.room.energyAvailable < 2000) {
+                        if (creep.room.energyAvailable < 2500) {
                             creep.getEnergy()
                         }
                         else{

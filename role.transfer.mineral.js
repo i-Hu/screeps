@@ -19,14 +19,16 @@ var roleTransferMineral = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            var container = Game.getObjectById(creep.memory.containerId);
-            for (let name in container.store) {
-                if (creep.withdraw(container, name) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+            if (!creep.getDroppedEnergy()) {
+                var container = Game.getObjectById(creep.memory.containerId);
+                for (let name in container.store) {
+                    if (creep.withdraw(container, name) === ERR_NOT_IN_RANGE) {
+                        creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
                 }
             }
         } else {
-            creep.fillStorage()
+            creep.fillTerminal()
         }
     }
 };
