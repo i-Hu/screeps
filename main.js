@@ -38,6 +38,8 @@ module.exports.loop = function () {
     //工厂生产
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_ZYNTHIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_OXIDANT);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_UTRIUM_BAR);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_WIRE);
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
@@ -137,7 +139,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 1) {
+    if (upgraders.length < 0) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,

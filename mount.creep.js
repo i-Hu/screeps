@@ -93,7 +93,11 @@ const creepExtension = {
             filter: i => i.structureType === structureType && _.sum(i.store) < i.store.getCapacity(resource)
         });
         if (targets.length > 0) {
-            return this.fillTargetResource(targets[0], resource);
+            if (resource === 'all') {
+                return this.fillTargetAll(targets[0])
+            } else {
+                return this.fillTargetResource(targets[0], resource);
+            }
         }
         return false
     },
@@ -121,15 +125,18 @@ const creepExtension = {
         return false
     },
     getTargetResource(target, resource) {
+        if (target && target.store[resource] > 0) {
+            if (this.withdraw(target, resource) === ERR_NOT_IN_RANGE) {
+                this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            return true
+        }
+        return false
+    },
+    getTargetAll(target) {
         if (target && _.sum(target.store) > 0) {
-            if (resource === "all") {
-                for (let name in target.store) {
-                    if (this.withdraw(target, name) === ERR_NOT_IN_RANGE) {
-                        this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
-                    }
-                }
-            } else {
-                if (this.withdraw(target, resource) === ERR_NOT_IN_RANGE) {
+            for (let name in target.store) {
+                if (this.withdraw(target, name) === ERR_NOT_IN_RANGE) {
                     this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
@@ -141,7 +148,7 @@ const creepExtension = {
         const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3, {filter: i => _.sum(i.store) > 0});
         if (tombstones.length > 0) {
             const tombstone = tombstones[0];
-            return this.getTargetResource(tombstone, "all")
+            return this.getTargetAll(tombstone)
         }
         return false
     },
@@ -160,7 +167,7 @@ const creepExtension = {
     getContainerIdAll() {
         const container = Game.getObjectById(this.memory.containerId);
         if (container && _.sum(container.store) >= 200) {
-            return this.getTargetResource(container, 'all')
+            return this.getTargetAll(container)
         }
         return false
     },

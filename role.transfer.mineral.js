@@ -16,7 +16,7 @@ var roleTransferMineral = {
             //直接根据Id分配容器
             if (!creep.getDroppedResource()) {
                 if (!creep.getTombAll()) {
-                    if (!creep.getTargetResource(container, 'all')) {
+                    if (!creep.getTargetAll(container)) {
                         creep.moveTo(container)
                     }
                 }
