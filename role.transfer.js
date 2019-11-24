@@ -8,31 +8,17 @@
  */
 var roleTransfer = {
     run: function (creep) {
-        let storage;
-        if (creep.memory.transfer && creep.store[RESOURCE_ENERGY] === 0) {
-            creep.memory.transfer = false;
-            creep.say('withdraw');
-        }
-        if (!creep.memory.transfer && creep.isFull()) {
-            creep.memory.transfer = true;
-            creep.say('transfer');
-        }
+        creep.switch();
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
             if (!creep.getDroppedEnergy()) {
                 if (!creep.getTombEnergy()) {
-                    var container = Game.getObjectById(creep.memory.containerId);
-                    if (container && container.store[RESOURCE_ENERGY] >= 600) {
-                        if (creep.withdraw(container, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                            creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
-                        }
-                    } else {
-                        if (creep.room.energyAvailable < 2500) {
+                    if (!creep.getContainerIdAll()) {
+                        if (creep.room.energyAvailable < 2700) {
                             creep.getEnergy()
-                        }
-                        else{
-                            creep.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        } else {
+                            creep.moveTo(Game.getObjectById(creep.memory.containerId), {visualizePathStyle: {stroke: '#ffaa00'}});
                         }
                     }
                 }

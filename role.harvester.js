@@ -10,16 +10,8 @@ const roleHarvester = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.memory.charge && creep.store[RESOURCE_ENERGY] === 0) {
-            creep.memory.charge = false;
-            creep.say('🔄 harvest');
-        }
-        if (!creep.memory.charge && creep.store.getFreeCapacity() === 0) {
-            creep.memory.charge = true;
-            creep.say('charge');
-        }
-
-        if (!creep.memory.charge) {
+        creep.switch();
+        if (!creep.memory.transfer) {
             if (!creep.getDroppedEnergy()) {
                 creep.harvestSource()
             }

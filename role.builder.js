@@ -13,16 +13,9 @@ var roleBuilder = {
     /** @param {Creep} creep **/
     run: function (creep) {
         // 状态转换
-        if (creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
-            creep.memory.building = false;
-            creep.say('🔄 harvest');
-        }
-        if (!creep.memory.building && creep.store.getFreeCapacity() === 0) {
-            creep.memory.building = true;
-            creep.say('🚧 build');
-        }
+        creep.switch();
 
-        if (creep.memory.building) {
+        if (creep.memory.transfer) {
             if(!creep.buildClosest()){
                 let targets = [];
                 // 根据拥有的房间查询对应的建设基地

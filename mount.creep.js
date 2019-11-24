@@ -111,10 +111,9 @@ const creepExtension = {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
         if (!this.getDroppedEnergy()) {
             if (!this.getTombEnergy()) {
-                if (!this.getContainerEnergy()) {
-                    if (!this.getLinkEnergy()) {
-                        this.getStorageEnergy()
-                    }
+                if (!this.getContainerAndLinkEnergy()) {
+                    this.getStorageEnergy()
+
                 }
             }
         }
@@ -141,31 +140,16 @@ const creepExtension = {
         }
         return false
     },
-    getContainerEnergy() {
+    getContainerAndLinkEnergy() {
         // 能量最多的容器
         const containers = this.room.find(FIND_STRUCTURES, {
-            filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
-                i.store[RESOURCE_ENERGY] > 0)
+            filter: (i) => ((i.structureType === STRUCTURE_CONTAINER || i.structureType === STRUCTURE_LINK) &&
+                i.store[RESOURCE_ENERGY] > 500)
         });
         if (containers.length > 0) {
             containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
             if (this.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
                 this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-            return true
-        }
-        return false
-    },
-    getLinkEnergy() {
-        // 能量最多的容器
-        const links = this.room.find(FIND_STRUCTURES, {
-            filter: (i) => (i.structureType === STRUCTURE_LINK &&
-                i.store[RESOURCE_ENERGY] > 500)
-        });
-        if (links.length > 0) {
-            links.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
-            if (this.withdraw(links[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(links[0], {visualizePathStyle: {stroke: '#ffaa00'}});
             }
             return true
         }
@@ -181,7 +165,32 @@ const creepExtension = {
         }
         return false
     },
-    repairClosest() {
+    getContainerIdAll() {
+        const container = Game.getObjectById(this.memory.containerId);
+        if (container && _.sum(container.store) >= 200) {
+            for (let name in container.store) {
+                if (this.withdraw(container, name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            }
+            return true
+        }
+        return false
+    },
+    getStorageAll() {
+        let storage = this.room.storage;
+        if (storage) {
+            for (let name in storage.store) {
+                if (this.withdraw(storage, name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            }
+            return true
+        }
+        return false
+    },
+    repairClosest
+        () {
         const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});
         if (towers.length > 0) {
             return false
@@ -200,7 +209,8 @@ const creepExtension = {
             }
         }
         return false
-    },
+    }
+    ,
     buildClosest() {
         const target = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
         if (target) {
@@ -210,13 +220,15 @@ const creepExtension = {
             return true
         }
         return false
-    },
+    }
+    ,
     harvestSource() {
         const source = Game.getObjectById(this.memory.sourceId);
         if (this.harvest(source) === ERR_NOT_IN_RANGE || this.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
             this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
         }
-    },
+    }
+    ,
     attackClosest() {
         const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (target) {
@@ -226,5 +238,15 @@ const creepExtension = {
             return true
         }
         return false
+    }
+    ,
+    switch() {
+        if
+        (this.memory.transfer && this.isEmpty()) {
+            this.memory.transfer = false
+        }
+        if (!this.memory.transfer && this.isFull()) {
+            this.memory.transfer = true
+        }
     }
 };
