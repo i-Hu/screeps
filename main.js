@@ -6,7 +6,7 @@ const roleReserver = require('./role.reserver');
 const roleClaimer = require('./role.claimer');
 const roleAttacker = require('./role.attacker');
 const roleHarvestDeposit = require('./role.harvest.deposit');
-const roleHarvestZynthium = require('./role.harvest.zynthium');
+const roleHarvestMineral = require('./role.harvest.mineral');
 const roleHealer = require('./role.healer');
 const roleTransferLink = require('./role.transfer.link');
 const roleTransferMineral = require('./role.transfer.mineral');
@@ -37,6 +37,7 @@ module.exports.loop = function () {
 
     //工厂生产
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_ZYNTHIUM_BAR);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_OXIDANT);
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
@@ -60,23 +61,31 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd2a406d75e52445a1fa512').length < 1) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer1',
             {
-                memory: {role: 'transferLink',roomName:'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
+                memory: {role: 'transferLink', roomName: 'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
                 directions: [TOP]
             });
     }
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd405370c8e7a0914169d1a').length < 1) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer2',
             {
-                memory: {role: 'transferLink',roomName:'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
+                memory: {role: 'transferLink', roomName: 'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
                 directions: [BOTTOM]
             });
     }
     //矿物
-    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1) {
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1 && _.sum(Game.getObjectById('5dd401c990946d17d1495ee5').store) > 0) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
-                memory: {role: 'transferMineral',roomName:'W9N49', containerId: '5dd401c990946d17d1495ee5'},
+                memory: {role: 'transferMineral', roomName: 'W9N49', containerId: '5dd401c990946d17d1495ee5'},
                 directions: [TOP]
+            });
+    }
+    //矿物
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd94b7189e95c7766a45c52').length < 1 && _.sum(Game.getObjectById('5dd94b7189e95c7766a45c52').store) > 0) {
+        Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
+            {
+                memory: {role: 'transferMineral', roomName: 'W6N49', containerId: '5dd94b7189e95c7766a45c52'},
+                directions: [BOTTOM]
             });
     }
     // 保持宣称者数量
@@ -108,7 +117,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 2) {
+    if (upgraders2.length < 3) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -234,26 +243,40 @@ module.exports.loop = function () {
                 directions: [TOP]
             });
     }
-    const harvestZynthium = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestZynthium');
-    if (harvestZynthium.length < 1) {
-        newName = 'harvestZynthium' + Game.time;
-        console.log('Spawn1 Spawning new harvestZynthium: ' + newName);
+    const harvestMineral = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
+        creep.memory.sourceId === '5bbcb27c40062e4259e93a8c' &&
+        Game.getObjectById(creep.memory.sourceId).mineralAmount > 0);
+    if (harvestMineral.length < 1) {
+        newName = 'harvestMineral' + Game.time;
+        console.log('Spawn1 Spawning new harvestMineral: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
-                memory: {role: 'harvestZynthium', room: 'W9N49', sourceId: '5bbcb27c40062e4259e93a8c'},
+                memory: {role: 'harvestMineral', room: 'W9N49', sourceId: '5bbcb27c40062e4259e93a8c'},
                 directions: [TOP]
             });
     }
-    // const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
-    // if (harvestDeposits.length < 0) {
-    //     newName = 'harvestDeposit' + Game.time;
-    //     console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
-    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK,WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-    //         {
-    //             memory: {role: 'harvestDeposit', room: 'W9N49',sourceId : '5dd94b670d3d43396b64b68f'},
-    //             directions: [TOP]
-    //         });
-    // }
+    const harvestMineral2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
+        creep.memory.sourceId === '5bbcb29c40062e4259e93bcd' &&
+        Game.getObjectById(creep.memory.sourceId).mineralAmount > 0);
+    if (harvestMineral2.length < 1) {
+        newName = 'harvestMineral' + Game.time;
+        console.log('Spawn2 Spawning new harvestMineral: ' + newName);
+        Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            {
+                memory: {role: 'harvestMineral', room: 'W6N49', sourceId: '5bbcb29c40062e4259e93bcd'},
+                directions: [TOP]
+            });
+    }
+    const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
+    if (harvestDeposits.length < 2) {
+        newName = 'harvestDeposit' + Game.time;
+        console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
+        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+            {
+                memory: {role: 'harvestDeposit', room: 'W9N49', sourceId: '5dd94b670d3d43396b64b68f'},
+                directions: [TOP]
+            });
+    }
 
     for (name in Game.creeps) {
         let creep = Game.creeps[name];
@@ -281,8 +304,8 @@ module.exports.loop = function () {
         if (creep.memory.role === 'harvestDeposit') {
             roleHarvestDeposit.run(creep);
         }
-        if (creep.memory.role === 'harvestZynthium') {
-            roleHarvestZynthium.run(creep);
+        if (creep.memory.role === 'harvestMineral') {
+            roleHarvestMineral.run(creep);
         }
         if (creep.memory.role === 'healer') {
             roleHealer.run(creep)

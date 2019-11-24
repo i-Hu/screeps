@@ -50,7 +50,7 @@ const creepExtension = {
         } else {
             storage = Game.rooms['W6N49'].storage;
         }
-        return this.fillTargetResource(storage, "all")
+        return this.fillTargetAll(storage)
     },
     //填充所属房间的terminal
     fillTerminal() {
@@ -61,22 +61,25 @@ const creepExtension = {
         } else {
             terminal = Game.rooms['W6N49'].terminal;
         }
-        return this.fillTargetResource(terminal, "all")
+        return this.fillTargetAll(terminal)
     },
     fillFactory() {
         const factory = this.pos.findClosestByPath(FIND_STRUCTURES, {filter: i => i.structureType === STRUCTURE_FACTORY});
-        return this.fillTargetResource(factory, "all")
+        return this.fillTargetAll(factory)
     },
     fillTargetResource(target, resource) {
+        if (target && this.store[resource] > 0) {
+            if (this.transfer(target, resource) === ERR_NOT_IN_RANGE) {
+                this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+            }
+            return true
+        }
+        return false
+    },
+    fillTargetAll(target) {
         if (target) {
-            if (resource === "all") {
-                for (let name in this.store) {
-                    if (this.transfer(target, name) === ERR_NOT_IN_RANGE) {
-                        this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
-                    }
-                }
-            } else {
-                if (this.transfer(target, resource) === ERR_NOT_IN_RANGE) {
+            for (let name in this.store) {
+                if (this.transfer(target, name) === ERR_NOT_IN_RANGE) {
                     this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
@@ -86,6 +89,7 @@ const creepExtension = {
     },
     fillClosestResource(structureType, resource) {
         const targets = this.pos.findInRange(FIND_STRUCTURES, 5, {
+            // getCapacity('all')返回总容量
             filter: i => i.structureType === structureType && _.sum(i.store) < i.store.getCapacity(resource)
         });
         if (targets.length > 0) {
@@ -117,7 +121,7 @@ const creepExtension = {
         return false
     },
     getTargetResource(target, resource) {
-        if (target) {
+        if (target && _.sum(target.store) > 0) {
             if (resource === "all") {
                 for (let name in target.store) {
                     if (this.withdraw(target, name) === ERR_NOT_IN_RANGE) {
@@ -156,7 +160,7 @@ const creepExtension = {
     getContainerIdAll() {
         const container = Game.getObjectById(this.memory.containerId);
         if (container && _.sum(container.store) >= 200) {
-            return this.getTargetResource(container,'all')
+            return this.getTargetResource(container, 'all')
         }
         return false
     },
@@ -197,10 +201,10 @@ const creepExtension = {
         }
     },
     attackClosest() {
-        const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        const target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (target) {
-            if (creep.attack(target) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(target);
+            if (this.attack(target) === ERR_NOT_IN_RANGE) {
+                this.moveTo(target);
             }
             return true
         }

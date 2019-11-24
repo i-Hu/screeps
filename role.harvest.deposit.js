@@ -1,33 +1,15 @@
 var roleHarvestDeposit = {
     run: function (creep) {
-        if (creep.memory.charge && creep.store[RESOURCE_SILICON] === 0) {
-            creep.memory.charge = false;
-            creep.say('🔄 harvest');
-        }
-        if (!creep.memory.charge && creep.isFull()) {
-            creep.memory.charge = true;
-            creep.say('charge');
-        }
+        creep.switch();
 
-        if (!creep.memory.charge) {
-            const droppedResource = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
-                filter: i => i.resourceType === RESOURCE_SILICON
-            });
-            if (droppedResource) {
-                if (creep.pickup(droppedResource) === ERR_NOT_IN_RANGE) {
-                    creep.moveTo(droppedResource, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-
-            } else {
-                const tombstone = creep.pos.findClosestByPath(FIND_TOMBSTONES, {
-                    filter: (i) => i.store[RESOURCE_SILICON] > 0
-                });
-                if (tombstone) {
-                    if (creep.withdraw(tombstone, RESOURCE_SILICON) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
+        if (!creep.memory.transfer) {
+            if (!creep.getDroppedResource()) {
+                if (!creep.getTombAll()) {
+                    if (creep.room.name !== 'W7N50') {
+                        creep.moveTo(new RoomPosition(25, 35, 'W7N50'))
+                    } else {
+                        creep.harvestSource()
                     }
-                } else {
-                    creep.harvestSource()
                 }
             }
         } else {

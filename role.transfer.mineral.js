@@ -6,17 +6,25 @@
  * var mod = require('role.transfer');
  * mod.thing == 'a thing'; // true
  */
+
+const roleTransfer = require('./role.transfer');
 var roleTransferMineral = {
     run: function (creep) {
         creep.switch();
-
+        const container = Game.getObjectById(creep.memory.containerId);
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
             if (!creep.getDroppedResource()) {
-                creep.getContainerIdAll()
+                if (!creep.getTombAll()) {
+                    if (!creep.getTargetResource(container, 'all')) {
+                        creep.moveTo(container)
+                    }
+                }
             }
         } else {
-            creep.fillFactory()
+            if (!creep.fillFactory()){
+                creep.fillStorage()
+            }
         }
     }
 };
