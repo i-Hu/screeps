@@ -2,7 +2,11 @@ var roleHarvestZynthium = {
     run: function (creep) {
         creep.switch();
         if (!creep.memory.transfer) {
-            creep.harvestSource()
+            if (!creep.getDroppedResource()) {
+                if (!creep.getTombAll()) {
+                    creep.harvestSource()
+                }
+            }
         } else {
             creep.fillContainer()
         }

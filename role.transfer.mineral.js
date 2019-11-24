@@ -12,7 +12,7 @@ var roleTransferMineral = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            if (!creep.getDroppedEnergy()) {
+            if (!creep.getDroppedResource()) {
                 creep.getContainerIdAll()
             }
         } else {

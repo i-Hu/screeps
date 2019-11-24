@@ -12,7 +12,7 @@ const roleHarvester = {
     run: function (creep) {
         creep.switch();
         if (!creep.memory.transfer) {
-            if (!creep.getDroppedEnergy()) {
+            if (!creep.getDroppedResource()) {
                 creep.harvestSource()
             }
         } else {

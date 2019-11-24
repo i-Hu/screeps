@@ -12,8 +12,8 @@ var roleTransfer = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            if (!creep.getDroppedEnergy()) {
-                if (!creep.getTombEnergy()) {
+            if (!creep.getDroppedResource()) {
+                if (!creep.getTombAll()) {
                     if (!creep.getContainerIdAll()) {
                         if (creep.room.energyAvailable < 2700) {
                             creep.getEnergy()

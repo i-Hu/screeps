@@ -109,8 +109,8 @@ const creepExtension = {
     },
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
-        if (!this.getDroppedEnergy()) {
-            if (!this.getTombEnergy()) {
+        if (!this.getDroppedResource()) {
+            if (!this.getTombAll()) {
                 if (!this.getContainerAndLinkEnergy()) {
                     this.getStorageEnergy()
 
@@ -118,7 +118,7 @@ const creepExtension = {
             }
         }
     },
-    getDroppedEnergy() {
+    getDroppedResource() {
         const droppedResources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
         if (droppedResources.length > 0) {
             if (this.pickup(droppedResources[0]) === ERR_NOT_IN_RANGE) {
@@ -128,13 +128,13 @@ const creepExtension = {
         }
         return false
     },
-    getTombEnergy() {
-        const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3, {
-            filter: (i) => i.store[RESOURCE_ENERGY] > 0
-        });
+    getTombAll() {
+        const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3);
         if (tombstones.length > 0) {
-            if (this.withdraw(tombstones[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(tombstones[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            for (let name in container.store) {
+                if (this.withdraw(tombstones[0], name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(tombstones[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
             }
             return true
         }
