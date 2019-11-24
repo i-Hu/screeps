@@ -1,6 +1,6 @@
 var roleTransferLink = {
     run: function (creep) {
-        if (creep.memory.transfer && _.sum(creep.store) === 0) {
+        if (creep.memory.transfer && creep.isEmpty()) {
             creep.memory.transfer = false;
             creep.say('withdraw');
         }

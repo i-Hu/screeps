@@ -1,6 +1,6 @@
 var roleHarvestZynthium = {
     run: function (creep) {
-        if (creep.memory.charge && creep.store[RESOURCE_ZYNTHIUM] === 0) {
+        if (creep.memory.charge && creep.isEmpty()) {
             creep.memory.charge = false;
             creep.say('🔄 harvest');
         }

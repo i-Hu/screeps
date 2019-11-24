@@ -10,20 +10,14 @@
 var roleAttacker = {
     run: function (creep) {
         // 如果不在防御的房间，就前往房间
-        if (creep.hits < creep.hitsMax*0.5) {
+        if (creep.hits < creep.hitsMax * 0.5) {
             creep.moveTo(new RoomPosition(25, 25, 'W9N49'))
         } else {
-            if (creep.room.name !== 'W9N50') {
-                creep.moveTo(new RoomPosition(25, 5, 'W8N49'))
+            if (creep.room.name !== creep.memory.room) {
+                creep.moveTo(new RoomPosition(25, 5, creep.memory.room))
             } else {
-                const target = Game.getObjectById('5dd2571dd127eeb3a51bcc42');
-                // const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-                if (target) {
-                    if (creep.attack(target) === ERR_NOT_IN_RANGE) {
-                        creep.moveTo(target);
-                    }
-                } else {
-                    creep.moveTo(new RoomPosition(25, 5, 'W8N49'))
+                if (!creep.attackClosest()) {
+                    creep.moveTo(new RoomPosition(25, 5, creep.memory.room))
                 }
             }
         }

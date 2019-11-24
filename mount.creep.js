@@ -26,13 +26,13 @@ const creepExtension = {
     },
     // 填充所有 tower
     fillTower() {
-        const towers = this.room.find(FIND_STRUCTURES, {
+        const tower = this.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: (structure) => structure.structureType === STRUCTURE_TOWER &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 500
         });
-        if (towers.length > 0) {
-            if (this.transfer(towers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+        if (tower) {
+            if (this.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+                this.moveTo(tower, {visualizePathStyle: {stroke: '#ffffff'}});
             }
             return true
         }
@@ -104,6 +104,9 @@ const creepExtension = {
     isFull() {
         return this.store.getFreeCapacity() === 0;
     },
+    isEmpty() {
+        return _.sum(this.store) === 0;
+    },
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
         if (!this.getDroppedEnergy()) {
@@ -142,7 +145,7 @@ const creepExtension = {
         // 能量最多的容器
         const containers = this.room.find(FIND_STRUCTURES, {
             filter: (i) => (i.structureType === STRUCTURE_CONTAINER &&
-                i.store[RESOURCE_ENERGY] > 500)
+                i.store[RESOURCE_ENERGY] > 0)
         });
         if (containers.length > 0) {
             containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
@@ -213,5 +216,15 @@ const creepExtension = {
         if (this.harvest(source) === ERR_NOT_IN_RANGE || this.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
             this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
         }
+    },
+    attackClosest() {
+        const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+        if (target) {
+            if (creep.attack(target) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(target);
+            }
+            return true
+        }
+        return false
     }
 };

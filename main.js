@@ -7,7 +7,6 @@ const roleClaimer = require('./role.claimer');
 const roleAttacker = require('./role.attacker');
 const roleHarvestDeposit = require('./role.harvest.deposit');
 const roleHarvestZynthium = require('./role.harvest.zynthium');
-const roleHarvesterPower = require('./role.harvest.power');
 const roleHealer = require('./role.healer');
 const roleTransferLink = require('./role.transfer.link');
 const roleTransferMineral = require('./role.transfer.mineral');
@@ -59,7 +58,7 @@ module.exports.loop = function () {
     }
 
     //link传输
-    let linkFrom = [Game.getObjectById('5dd3f0315eff015433cf62b8'), Game.getObjectById('5dd3ea0ce1f42309fea19eaa')];
+    let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
     linkFrom.forEach(i => i.transferEnergy(linkTo));
 
@@ -79,14 +78,14 @@ module.exports.loop = function () {
 
     // 核心传递者
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd2a406d75e52445a1fa512').length < 1) {
-        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transfer1',
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer1',
             {
                 memory: {role: 'transferLink', containerId: '5dd2a406d75e52445a1fa512'},
                 directions: [TOP]
             });
     }
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd405370c8e7a0914169d1a').length < 1) {
-        Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transfer2',
+        Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer2',
             {
                 memory: {role: 'transferLink', containerId: '5dd405370c8e7a0914169d1a'},
                 directions: [BOTTOM]
@@ -94,7 +93,7 @@ module.exports.loop = function () {
     }
     //矿物
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1) {
-        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral'+Game.time,
+        Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
                 memory: {role: 'transferMineral', containerId: '5dd401c990946d17d1495ee5'},
                 directions: [TOP]
@@ -129,7 +128,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 1) {
+    if (upgraders2.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -174,7 +173,7 @@ module.exports.loop = function () {
     for (let i in Game.rooms) {
         Game.rooms[i].find(FIND_STRUCTURES, {
             //对有存储能量的容器生成transfer
-            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] > 200 &&
+            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER && structure.store[RESOURCE_ENERGY] >= 500 &&
                 ['W9N49', 'W8N49', 'W7N49', 'W6N49', 'W5N49'].includes(structure.room.name)
         }).forEach(function (container) {
             let spawnName;
@@ -236,6 +235,16 @@ module.exports.loop = function () {
                 directions: [BOTTOM]
             });
     }
+    //防止空指针异常
+    if (Game.rooms['W7N49'] && Game.rooms['W7N49'].find(FIND_HOSTILE_CREEPS).length > 0 && attackers.length < 1) {
+        newName = 'Attacker' + Game.time;
+        console.log('Spawning new attacker: ' + newName);
+        Game.spawns['Spawn2'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
+            {
+                memory: {role: 'attacker', room: 'W7N49'},
+                directions: [BOTTOM]
+            });
+    }
     if (healers.length < 0) {
         newName = 'healer' + Game.time;
         console.log('Spawn1 Spawning new healer: ' + newName);
@@ -265,16 +274,7 @@ module.exports.loop = function () {
     //             directions: [TOP]
     //         });
     // }
-    // const harvestPower = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestPower');
-    // if (harvestPower.length < 0) {
-    //     newName = 'harvestPower' + Game.time;
-    //     console.log('Spawn1 Spawning new harvestPower: ' + newName);
-    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-    //         {
-    //             memory: {role: 'harvestPower', room: 'W9N49'},
-    //             directions: [TOP]
-    //         });
-    // }
+
     for (name in Game.creeps) {
         let creep = Game.creeps[name];
         if (creep.memory.role === 'harvester') {
@@ -306,9 +306,6 @@ module.exports.loop = function () {
         }
         if (creep.memory.role === 'healer') {
             roleHealer.run(creep)
-        }
-        if (creep.memory.role === 'harvestPower') {
-            roleHarvesterPower.run(creep)
         }
         if (creep.memory.role === 'transferLink') {
             if (creep.room.energyAvailable < 1350) {
