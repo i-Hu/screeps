@@ -16,13 +16,7 @@ const creepExtension = {
                 structure.structureType === STRUCTURE_SPAWN) &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
         });
-        if (target) {
-            if (this.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-            return true
-        }
-        return false
+        return this.fillTargetResource(target, RESOURCE_ENERGY)
     },
     // 填充所有 tower
     fillTower() {
@@ -30,13 +24,7 @@ const creepExtension = {
             filter: (structure) => structure.structureType === STRUCTURE_TOWER &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) >= 500
         });
-        if (tower) {
-            if (this.transfer(tower, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(tower, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-            return true
-        }
-        return false
+        return this.fillTargetResource(tower, RESOURCE_ENERGY)
     },
     //填充所属房间的storage
     fillStorage() {
@@ -47,11 +35,7 @@ const creepExtension = {
         } else {
             storage = Game.rooms['W6N49'].storage;
         }
-        for (let name in this.store) {
-            if (this.transfer(storage, name) === ERR_NOT_IN_RANGE) {
-                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-        }
+        return this.fillTargetResource(storage, "all")
     },
     //填充所属房间的terminal
     fillTerminal() {
@@ -62,41 +46,35 @@ const creepExtension = {
         } else {
             terminal = Game.rooms['W6N49'].terminal;
         }
-        for (let name in this.store) {
-            if (this.transfer(terminal, name) === ERR_NOT_IN_RANGE) {
-                this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-        }
+        return this.fillTargetResource(terminal, "all")
     },
-    fillContainer() {
-        // 只传递给最近的容器
-        const containers = this.pos.findInRange(FIND_STRUCTURES, 3, {
-            filter: (structure) => structure.structureType === STRUCTURE_CONTAINER &&
-                // 所有资源的总容量
-                _.sum(structure.store) < 2000
-        });
-        if (containers.length > 0) {
-            for (let name in this.store) {
-                if (this.transfer(containers[0], name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+    fillFactory() {
+        const factory = this.pos.findClosestByPath(FIND_STRUCTURES, {filter: i => i.structureType === STRUCTURE_FACTORY});
+        return this.fillTargetResource(factory, "all")
+    },
+    fillTargetResource(target, resource) {
+        if (target) {
+            if (resource === "all") {
+                for (let name in this.store) {
+                    if (this.transfer(target, name) === ERR_NOT_IN_RANGE) {
+                        this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
+                }
+            } else {
+                if (this.transfer(target, resource) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }
             return true
         }
         return false
     },
-    fillLink() {
-        // 只传递给最近的LINK
-        const links = this.pos.findInRange(FIND_STRUCTURES, 5, {
-            filter: (i) => i.structureType === STRUCTURE_LINK &&
-                // 所有能量的总容量
-                _.sum(i.store) < 750
+    fillClosestResource(structureType, resource) {
+        const targets = this.pos.findInRange(FIND_STRUCTURES, 5, {
+            filter: i => i.structureType === structureType && _.sum(i.store) < i.store.getCapacity(resource)
         });
-        if (links.length > 0) {
-            if (this.transfer(links[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(links[0], {visualizePathStyle: {stroke: '#ffffff'}});
-            }
-            return true
+        if (targets.length > 0) {
+            return this.fillTargetResource(targets[0], resource);
         }
         return false
     },
@@ -107,13 +85,13 @@ const creepExtension = {
     isEmpty() {
         return _.sum(this.store) === 0;
     },
+
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
         if (!this.getDroppedResource()) {
             if (!this.getTombAll()) {
                 if (!this.getContainerAndLinkEnergy()) {
                     this.getStorageEnergy()
-
                 }
             }
         }
@@ -129,11 +107,12 @@ const creepExtension = {
         return false
     },
     getTombAll() {
-        const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3);
+        const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3, {filter: i => _.sum(i.store) > 0});
         if (tombstones.length > 0) {
-            for (let name in container.store) {
-                if (this.withdraw(tombstones[0], name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(tombstones[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            const tombstone = tombstones[0];
+            for (let name in tombstone.store) {
+                if (this.withdraw(tombstone, name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
             }
             return true
@@ -189,6 +168,28 @@ const creepExtension = {
         }
         return false
     },
+    getTerminalAll() {
+        let terminal = this.room.terminal;
+        if (terminal) {
+            for (let name in terminal.store) {
+                if (this.withdraw(terminal, name) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffaa00'}});
+                }
+            }
+            return true
+        }
+        return false
+    },
+    getTerminalResource(resource) {
+        let terminal = this.room.terminal;
+        if (terminal && terminal.store[resource] > 0) {
+            if (this.withdraw(terminal, resource) === ERR_NOT_IN_RANGE) {
+                this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffaa00'}});
+            }
+            return true
+        }
+        return false
+    },
     repairClosest
         () {
         const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});
@@ -209,8 +210,7 @@ const creepExtension = {
             }
         }
         return false
-    }
-    ,
+    },
     buildClosest() {
         const target = this.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
         if (target) {
@@ -220,15 +220,13 @@ const creepExtension = {
             return true
         }
         return false
-    }
-    ,
+    },
     harvestSource() {
         const source = Game.getObjectById(this.memory.sourceId);
         if (this.harvest(source) === ERR_NOT_IN_RANGE || this.harvest(source) === ERR_NOT_ENOUGH_RESOURCES) {
             this.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
         }
-    }
-    ,
+    },
     attackClosest() {
         const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
         if (target) {
@@ -238,8 +236,7 @@ const creepExtension = {
             return true
         }
         return false
-    }
-    ,
+    },
     switch() {
         if
         (this.memory.transfer && this.isEmpty()) {

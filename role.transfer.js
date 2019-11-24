@@ -28,7 +28,7 @@ var roleTransfer = {
             if (!creep.repairClosest()) {
                 if (!creep.fillTower()) {
                     if (!creep.fillSpawnEnergy()) {
-                        if (!creep.fillLink()) {
+                        if (!creep.fillClosestResource(STRUCTURE_LINK,RESOURCE_ENERGY)) {
                             creep.fillStorage()
                         }
                     }

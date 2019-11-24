@@ -4,14 +4,18 @@ var roleTransferLink = {
 
         if (!creep.memory.transfer) {
             //直接根据Id分配容器
-            if (!creep.getContainerIdAll()){
-                creep.getStorageAll()
+            if (!creep.getDroppedResource()) {
+                if (!creep.getTombAll()) {
+                    if (!creep.getContainerIdAll()) {
+                        creep.getTerminalAll()
+                    }
+                }
             }
         } else {
-            if (creep.store[RESOURCE_ENERGY] > 0 && creep.room.terminal.store[RESOURCE_ENERGY] > 10000) {
-                creep.fillStorage()
+            if (creep.store[RESOURCE_ZYNTHIUM] > 0) {
+                creep.fillFactory()
             } else {
-                creep.fillTerminal()
+                creep.fillStorage()
             }
         }
     }

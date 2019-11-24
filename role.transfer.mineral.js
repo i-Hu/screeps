@@ -16,7 +16,7 @@ var roleTransferMineral = {
                 creep.getContainerIdAll()
             }
         } else {
-            creep.fillTerminal()
+            creep.fillFactory()
         }
     }
 };

@@ -35,6 +35,8 @@ module.exports.loop = function () {
 
     tower.run();
 
+    //工厂生产
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_ZYNTHIUM_BAR);
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
@@ -58,14 +60,14 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd2a406d75e52445a1fa512').length < 1) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer1',
             {
-                memory: {role: 'transferLink', containerId: '5dd2a406d75e52445a1fa512'},
+                memory: {role: 'transferLink',roomName:'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
                 directions: [TOP]
             });
     }
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd405370c8e7a0914169d1a').length < 1) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer2',
             {
-                memory: {role: 'transferLink', containerId: '5dd405370c8e7a0914169d1a'},
+                memory: {role: 'transferLink',roomName:'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
                 directions: [BOTTOM]
             });
     }
@@ -73,7 +75,7 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
-                memory: {role: 'transferMineral', containerId: '5dd401c990946d17d1495ee5'},
+                memory: {role: 'transferMineral',roomName:'W9N49', containerId: '5dd401c990946d17d1495ee5'},
                 directions: [TOP]
             });
     }

@@ -17,8 +17,8 @@ const roleHarvester = {
             }
         } else {
             if (!creep.repairClosest()) {
-                if (!creep.fillLink()) {
-                    if (!creep.fillContainer()) {
+                if (!creep.fillClosestResource(STRUCTURE_LINK,RESOURCE_ENERGY)) {
+                    if (!creep.fillClosestResource(STRUCTURE_CONTAINER,"all")) {
                         // 临时性的功能，在新地图，充当建造者
                         creep.buildClosest()
                     }

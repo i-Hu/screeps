@@ -8,7 +8,7 @@ var roleHarvestZynthium = {
                 }
             }
         } else {
-            creep.fillContainer()
+            creep.fillClosestResource(STRUCTURE_CONTAINER,"all")
         }
     }
 };
