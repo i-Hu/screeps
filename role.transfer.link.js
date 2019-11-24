@@ -7,7 +7,7 @@ var roleTransferLink = {
             if (!creep.getDroppedResource()) {
                 if (!creep.getTombAll()) {
                     if (!creep.getContainerIdAll()) {
-                        creep.getTerminalAll()
+                        creep.getTargetResource(creep.room.storage,RESOURCE_ZYNTHIUM)
                     }
                 }
             }

@@ -9,6 +9,21 @@ const creepExtension = {
     isEnemy() {
         return this.room.find(FIND_HOSTILE_CREEPS).length > 0
     },
+    isFull() {
+        return this.store.getFreeCapacity() === 0;
+    },
+    isEmpty() {
+        return _.sum(this.store) === 0;
+    },
+    switch() {
+        if
+        (this.memory.transfer && this.isEmpty()) {
+            this.memory.transfer = false
+        }
+        if (!this.memory.transfer && this.isFull()) {
+            this.memory.transfer = true
+        }
+    },
     // 填充所有 spawn 和 extension
     fillSpawnEnergy() {
         var target = this.pos.findClosestByPath(FIND_STRUCTURES, {
@@ -79,19 +94,14 @@ const creepExtension = {
         return false
     },
     // 其他更多自定义拓展
-    isFull() {
-        return this.store.getFreeCapacity() === 0;
-    },
-    isEmpty() {
-        return _.sum(this.store) === 0;
-    },
+
 
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
         if (!this.getDroppedResource()) {
             if (!this.getTombAll()) {
                 if (!this.getContainerAndLinkEnergy()) {
-                    this.getStorageEnergy()
+                    this.getTargetResource(this.room.storage, RESOURCE_ENERGY)
                 }
             }
         }
@@ -106,16 +116,28 @@ const creepExtension = {
         }
         return false
     },
+    getTargetResource(target, resource) {
+        if (target) {
+            if (resource === "all") {
+                for (let name in target.store) {
+                    if (this.withdraw(target, name) === ERR_NOT_IN_RANGE) {
+                        this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
+                }
+            } else {
+                if (this.withdraw(target, resource) === ERR_NOT_IN_RANGE) {
+                    this.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+                }
+            }
+            return true
+        }
+        return false
+    },
     getTombAll() {
         const tombstones = this.pos.findInRange(FIND_TOMBSTONES, 3, {filter: i => _.sum(i.store) > 0});
         if (tombstones.length > 0) {
             const tombstone = tombstones[0];
-            for (let name in tombstone.store) {
-                if (this.withdraw(tombstone, name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(tombstone, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-            return true
+            return this.getTargetResource(tombstone, "all")
         }
         return false
     },
@@ -127,71 +149,18 @@ const creepExtension = {
         });
         if (containers.length > 0) {
             containers.sort((a, b) => b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]);
-            if (this.withdraw(containers[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-            return true
-        }
-        return false
-    },
-    getStorageEnergy() {
-        const storage = this.room.storage;
-        if (storage) {
-            if (this.withdraw(storage, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-                this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-            return true
+            return this.getTargetResource(containers[0], RESOURCE_ENERGY)
         }
         return false
     },
     getContainerIdAll() {
         const container = Game.getObjectById(this.memory.containerId);
         if (container && _.sum(container.store) >= 200) {
-            for (let name in container.store) {
-                if (this.withdraw(container, name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(container, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-            return true
+            return this.getTargetResource(container,'all')
         }
         return false
     },
-    getStorageAll() {
-        let storage = this.room.storage;
-        if (storage) {
-            for (let name in storage.store) {
-                if (this.withdraw(storage, name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(storage, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-            return true
-        }
-        return false
-    },
-    getTerminalAll() {
-        let terminal = this.room.terminal;
-        if (terminal) {
-            for (let name in terminal.store) {
-                if (this.withdraw(terminal, name) === ERR_NOT_IN_RANGE) {
-                    this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-            }
-            return true
-        }
-        return false
-    },
-    getTerminalResource(resource) {
-        let terminal = this.room.terminal;
-        if (terminal && terminal.store[resource] > 0) {
-            if (this.withdraw(terminal, resource) === ERR_NOT_IN_RANGE) {
-                this.moveTo(terminal, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
-            return true
-        }
-        return false
-    },
-    repairClosest
-        () {
+    repairClosest() {
         const towers = this.room.find(FIND_STRUCTURES, {filter: (i) => i.structureType === STRUCTURE_TOWER});
         if (towers.length > 0) {
             return false
@@ -236,14 +205,5 @@ const creepExtension = {
             return true
         }
         return false
-    },
-    switch() {
-        if
-        (this.memory.transfer && this.isEmpty()) {
-            this.memory.transfer = false
-        }
-        if (!this.memory.transfer && this.isFull()) {
-            this.memory.transfer = true
-        }
     }
 };
