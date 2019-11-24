@@ -40,6 +40,9 @@ module.exports.loop = function () {
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_OXIDANT);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_UTRIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_WIRE);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_LEMERGIUM_BAR);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_REDUCTANT);
+
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
@@ -119,7 +122,7 @@ module.exports.loop = function () {
     const upgraders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader' && creep.memory.room === 'W6N49');
     const builders2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'builder' && creep.memory.room === 'W6N49');
     console.log('W6N49: Upgraders: ' + upgraders2.length + '; Builders: ' + builders2.length);
-    if (upgraders2.length < 3) {
+    if (upgraders2.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn2 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,

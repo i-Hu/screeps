@@ -9,24 +9,24 @@ var roleTransferLink = {
                 if (!creep.getTombAll()) {
                     if (!creep.getContainerIdAll()) {
                         //工厂和市场都是不包含，存储器是包含
-                        if (factory) {
-                            for (let name in factory.store) {
-                                if (!['Z', 'U', 'O', 'energy', 'silicon', 'utrium_bar'].includes(name)) {
-                                    creep.getTargetResource(factory, name)
+                        if (creep.room.storage) {
+                            for (let name in creep.room.storage.store) {
+                                if (['Z', 'U', 'O', "L", 'H', 'utrium_bar', 'silicon', 'zynthium_bar', 'oxidant', 'lemergium_bar', 'reductant'].includes(name)) {
+                                    creep.getTargetResource(creep.room.storage, name)
                                 }
                             }
                         }
                         if (creep.room.terminal) {
                             for (let name in creep.room.terminal.store) {
-                                if (!['zynthium_bar', 'oxidant', 'energy'].includes(name)) {
+                                if (!['zynthium_bar', 'oxidant', 'energy', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name)) {
                                     creep.getTargetResource(creep.room.terminal, name)
                                 }
                             }
                         }
-                        if (creep.room.storage) {
-                            for (let name in creep.room.storage.store) {
-                                if (['Z', 'U', 'O', 'utrium_bar', 'silicon', 'zynthium_bar', 'oxidant'].includes(name)) {
-                                    creep.getTargetResource(creep.room.storage, name)
+                        if (factory) {
+                            for (let name in factory.store) {
+                                if (!['Z', 'U', 'O', "L", 'H', 'energy', 'silicon'].includes(name)) {
+                                    creep.getTargetResource(factory, name)
                                 }
                             }
                         }
@@ -40,8 +40,8 @@ var roleTransferLink = {
                 creep.fillTerminal()
             } else {
                 for (let name in creep.store) {
-                    if (['Z', 'U', 'O', 'silicon', 'utrium_bar'].includes(name) && creep.fillFactory()) {
-                    } else if (['zynthium_bar', 'oxidant'].includes(name) && creep.fillTerminal()) {
+                    if (['Z', 'U', 'O', "L", 'H', 'silicon'].includes(name) && factory && _.sum(factory.store) < 45000 && creep.fillFactory()) {
+                    } else if (['zynthium_bar', 'oxidant', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name) && creep.fillTerminal()) {
                     } else {
                         creep.fillStorage()
                     }
