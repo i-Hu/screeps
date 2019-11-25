@@ -11,7 +11,7 @@ const roleHarvester = {
                 if (!creep.fillClosestResource(STRUCTURE_LINK,RESOURCE_ENERGY)) {
                     if (!creep.fillClosestResource(STRUCTURE_CONTAINER,RESOURCE_ENERGY)) {
                         // 临时性的功能，在新地图，充当建造者
-                        creep.buildClosest()
+                        // creep.buildClosest()
                     }
                 }
             }

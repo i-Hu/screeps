@@ -67,14 +67,14 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer1',
             {
                 memory: {role: 'transferLink', roomName: 'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
-                directions: [TOP]
+                directions: [TOP, RIGHT]
             });
     }
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd405370c8e7a0914169d1a').length < 1) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer2',
             {
                 memory: {role: 'transferLink', roomName: 'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     //矿物
@@ -82,7 +82,7 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
                 memory: {role: 'transferMineral', roomName: 'W9N49', containerId: '5dd401c990946d17d1495ee5'},
-                directions: [TOP]
+                directions: [TOP, RIGHT]
             });
     }
     //矿物
@@ -90,7 +90,7 @@ module.exports.loop = function () {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
                 memory: {role: 'transferMineral', roomName: 'W6N49', containerId: '5dd94b7189e95c7766a45c52'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     // 保持宣称者数量
@@ -112,7 +112,7 @@ module.exports.loop = function () {
                     role: 'reserver',
                     roomName: roomName
                 },
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
 
         }
@@ -128,27 +128,27 @@ module.exports.loop = function () {
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
             {
                 memory: {role: 'upgrader', room: 'W6N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     // 保持建设者数量
-    if (builders2.length < 0) {
+    if (builders2.length < 1) {
         newName = 'Builder' + Game.time;
         console.log('Spawn2 Spawning new builder: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'builder', room: 'W6N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
 
-    if (upgraders.length < 0) {
+    if (upgraders.length < 1) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
             {
                 memory: {role: 'upgrader', room: 'W9N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     // 保持建设者数量
@@ -158,7 +158,7 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'builder', room: 'W9N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     // 保持传递者数量
@@ -186,7 +186,7 @@ module.exports.loop = function () {
                 Game.spawns[spawnName].spawnCreep(body, newName,
                     {
                         memory: {role: 'transfer', containerId: container.id},
-                        directions: [BOTTOM]
+                        directions: [BOTTOM, RIGHT]
                     });
             }
         });
@@ -214,7 +214,7 @@ module.exports.loop = function () {
                 Game.spawns[spawnName].spawnCreep(body, newName,
                     {
                         memory: {role: 'harvester', sourceId: source.id},
-                        directions: [BOTTOM]
+                        directions: [BOTTOM, RIGHT]
                     });
             }
         })
@@ -226,7 +226,7 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
             {
                 memory: {role: 'attacker', room: 'W8N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     //防止空指针异常
@@ -236,7 +236,7 @@ module.exports.loop = function () {
         Game.spawns['Spawn2'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
             {
                 memory: {role: 'attacker', room: 'W7N49'},
-                directions: [BOTTOM]
+                directions: [BOTTOM, RIGHT]
             });
     }
     if (healers.length < 0) {
@@ -245,41 +245,39 @@ module.exports.loop = function () {
         Game.spawns['Spawn1'].spawnCreep([HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, HEAL, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'healer', room: 'W8N49'},
-                directions: [TOP]
+                directions: [TOP, RIGHT]
             });
     }
     const harvestMineral = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
-        creep.memory.sourceId === '5bbcb27c40062e4259e93a8c' &&
-        Game.getObjectById(creep.memory.sourceId).mineralAmount > 0);
-    if (harvestMineral.length < 1) {
+        creep.memory.sourceId === '5bbcb27c40062e4259e93a8c');
+    if (harvestMineral.length < 1&& Game.getObjectById('5bbcb27c40062e4259e93a8c').mineralAmount >0) {
         newName = 'harvestMineral' + Game.time;
         console.log('Spawn1 Spawning new harvestMineral: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'harvestMineral', room: 'W9N49', sourceId: '5bbcb27c40062e4259e93a8c'},
-                directions: [TOP]
+                directions: [TOP, RIGHT]
             });
     }
     const harvestMineral2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
-        creep.memory.sourceId === '5bbcb29c40062e4259e93bcd' &&
-        Game.getObjectById(creep.memory.sourceId).mineralAmount > 0);
-    if (harvestMineral2.length < 1) {
+        creep.memory.sourceId === '5bbcb29c40062e4259e93bcd' );
+    if (harvestMineral2.length < 1&& Game.getObjectById('5bbcb29c40062e4259e93bcd').mineralAmount >0) {
         newName = 'harvestMineral' + Game.time;
         console.log('Spawn2 Spawning new harvestMineral: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
                 memory: {role: 'harvestMineral', room: 'W6N49', sourceId: '5bbcb29c40062e4259e93bcd'},
-                directions: [TOP]
+                directions: [TOP, RIGHT]
             });
     }
     const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
-    if (harvestDeposits.length < 2) {
+    if (harvestDeposits.length < 1) {
         newName = 'harvestDeposit' + Game.time;
         console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
             {
-                memory: {role: 'harvestDeposit', room: 'W9N49', sourceId: '5dd94b670d3d43396b64b68f'},
-                directions: [TOP]
+                memory: {role: 'harvestDeposit', room: 'W9N49', sourceId: '5dda829b9f32a9a79a45a687'},
+                directions: [TOP, RIGHT]
             });
     }
 

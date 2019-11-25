@@ -5,8 +5,8 @@ var roleHarvestDeposit = {
         if (!creep.memory.transfer) {
             if (!creep.getDroppedResource()) {
                 if (!creep.getTombAll()) {
-                    if (creep.room.name !== 'W7N50') {
-                        creep.moveTo(new RoomPosition(25, 35, 'W7N50'))
+                    if (creep.room.name !== 'W10N49') {
+                        creep.moveTo(new RoomPosition(37, 10, 'W10N49'))
                     } else {
                         creep.harvestSource()
                     }
