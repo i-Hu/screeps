@@ -66,14 +66,14 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd2a406d75e52445a1fa512').length < 1) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer1',
             {
-                memory: {role: 'transferLink', roomName: 'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
+                memory: {role: 'transferLink', room: 'W9N49', containerId: '5dd2a406d75e52445a1fa512'},
                 directions: [TOP, RIGHT]
             });
     }
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferLink' && creep.memory.containerId === '5dd405370c8e7a0914169d1a').length < 1) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], 'transfer2',
             {
-                memory: {role: 'transferLink', roomName: 'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
+                memory: {role: 'transferLink', room: 'W6N49', containerId: '5dd405370c8e7a0914169d1a'},
                 directions: [BOTTOM, RIGHT]
             });
     }
@@ -81,7 +81,7 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1 && _.sum(Game.getObjectById('5dd401c990946d17d1495ee5').store) > 0) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
-                memory: {role: 'transferMineral', roomName: 'W9N49', containerId: '5dd401c990946d17d1495ee5'},
+                memory: {role: 'transferMineral', room: 'W9N49', containerId: '5dd401c990946d17d1495ee5'},
                 directions: [TOP, RIGHT]
             });
     }
@@ -89,13 +89,13 @@ module.exports.loop = function () {
     if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd94b7189e95c7766a45c52').length < 1 && _.sum(Game.getObjectById('5dd94b7189e95c7766a45c52').store) > 0) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
-                memory: {role: 'transferMineral', roomName: 'W6N49', containerId: '5dd94b7189e95c7766a45c52'},
+                memory: {role: 'transferMineral', room: 'W6N49', containerId: '5dd94b7189e95c7766a45c52'},
                 directions: [BOTTOM, RIGHT]
             });
     }
     // 保持宣称者数量
     let reserveRoom = [];
-    reservers.forEach((i) => reserveRoom.push(i.memory.roomName));
+    reservers.forEach((i) => reserveRoom.push(i.memory.room));
     ['W7N49', 'W8N49', 'W5N49'].forEach(roomName => {
         // 防止空指针报错
         if (!Game.rooms[roomName] || !Game.rooms[roomName].controller.reservation || (Game.rooms[roomName].controller.reservation['ticksToEnd'] < 4000 && !reserveRoom.includes(roomName))) {
@@ -110,7 +110,7 @@ module.exports.loop = function () {
             Game.spawns[spawnName].spawnCreep([CLAIM, CLAIM, MOVE, MOVE], newName, {
                 memory: {
                     role: 'reserver',
-                    roomName: roomName
+                    room: roomName
                 },
                 directions: [BOTTOM, RIGHT]
             });
@@ -185,7 +185,7 @@ module.exports.loop = function () {
                 console.log(spawnName + 'Spawning new transfer: ' + newName);
                 Game.spawns[spawnName].spawnCreep(body, newName,
                     {
-                        memory: {role: 'transfer', containerId: container.id},
+                        memory: {role: 'transfer', room: Game.spawns[spawnName].room.name, containerId: container.id},
                         directions: [BOTTOM, RIGHT]
                     });
             }
@@ -213,7 +213,7 @@ module.exports.loop = function () {
                 console.log(spawnName + 'Spawning new harvester: ' + newName);
                 Game.spawns[spawnName].spawnCreep(body, newName,
                     {
-                        memory: {role: 'harvester', sourceId: source.id},
+                        memory: {role: 'harvester', room: Game.spawns[spawnName].room.name, sourceId: source.id},
                         directions: [BOTTOM, RIGHT]
                     });
             }
@@ -250,7 +250,7 @@ module.exports.loop = function () {
     }
     const harvestMineral = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
         creep.memory.sourceId === '5bbcb27c40062e4259e93a8c');
-    if (harvestMineral.length < 1&& Game.getObjectById('5bbcb27c40062e4259e93a8c').mineralAmount >0) {
+    if (harvestMineral.length < 1 && Game.getObjectById('5bbcb27c40062e4259e93a8c').mineralAmount > 0) {
         newName = 'harvestMineral' + Game.time;
         console.log('Spawn1 Spawning new harvestMineral: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -260,8 +260,8 @@ module.exports.loop = function () {
             });
     }
     const harvestMineral2 = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestMineral' &&
-        creep.memory.sourceId === '5bbcb29c40062e4259e93bcd' );
-    if (harvestMineral2.length < 1&& Game.getObjectById('5bbcb29c40062e4259e93bcd').mineralAmount >0) {
+        creep.memory.sourceId === '5bbcb29c40062e4259e93bcd');
+    if (harvestMineral2.length < 1 && Game.getObjectById('5bbcb29c40062e4259e93bcd').mineralAmount > 0) {
         newName = 'harvestMineral' + Game.time;
         console.log('Spawn2 Spawning new harvestMineral: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE], newName,

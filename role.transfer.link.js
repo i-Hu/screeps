@@ -18,7 +18,7 @@ var roleTransferLink = {
                         }
                         if (creep.room.terminal) {
                             for (let name in creep.room.terminal.store) {
-                                if (!['zynthium_bar', 'oxidant',  'utrium_bar', 'lemergium_bar', 'reductant'].includes(name)) {
+                                if (!['zynthium_bar', 'oxidant', 'energy', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name)) {
                                     creep.getTargetResource(creep.room.terminal, name)
                                 }
                             }

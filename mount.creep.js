@@ -16,12 +16,16 @@ const creepExtension = {
         return _.sum(this.store) === 0;
     },
     switch() {
-        if
-        (this.memory.transfer && this.isEmpty()) {
-            this.memory.transfer = false
-        }
-        if (!this.memory.transfer && this.isFull()) {
-            this.memory.transfer = true
+        if (this.hits < this.hitsMax * 0.6) {
+            this.moveTo(new RoomPosition(25, 25, this.memory.room))
+        } else {
+            if
+            (this.memory.transfer && this.isEmpty()) {
+                this.memory.transfer = false
+            }
+            if (!this.memory.transfer && this.isFull()) {
+                this.memory.transfer = true
+            }
         }
     },
     // 填充所有 spawn 和 extension
