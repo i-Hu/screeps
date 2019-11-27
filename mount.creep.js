@@ -145,7 +145,10 @@ const creepExtension = {
                 }
             }
             if (factoryStore.includes(name) && factory && _.sum(factory.store) < 45000 && this.fillFactory()) {
-            } else if (terminalStore.includes(name) && this.fillTerminal()) {
+            } else if (terminalStore.includes(name) ||
+                //终端保存2W资源供反应消耗
+                (['Z', 'U', "L", "K"].includes(name) && this.room.terminal.store[name] < 20000) &&
+                this.fillTerminal()) {
             } else {
                 this.fillStorage()
             }
