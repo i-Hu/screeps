@@ -320,10 +320,12 @@ const creepExtension = {
             }
         }
         //工厂和市场都是不包含，存储器是包含
-        if (this.room.storage) {
-            for (let name in this.room.storage.store) {
-                if (factoryStore.concat(terminalStore).includes(name)) {
-                    this.getTargetResource(this.room.storage, name)
+        if (factory) {
+            for (let name in factory.store) {
+                if (!factoryStore.concat(['energy']).includes(name)) {
+                    if (this.getTargetResource(factory, name)) {
+                        return true
+                    }
                 }
             }
         }
@@ -332,17 +334,20 @@ const creepExtension = {
                 if (!['Z', 'U', "L", "K"].concat(terminalStore, ['energy']).includes(name) ||
                     //终端保存2W资源供反应消耗
                     (['Z', 'U', "L", "K"].includes(name) && this.room.terminal.store[name] > 20000)) {
-                    this.getTargetResource(this.room.terminal, name)
+                    if (this.getTargetResource(this.room.terminal, name)) {
+                        return true
+                    }
                 }
             }
         }
-        if (factory) {
-            for (let name in factory.store) {
-                if (!factoryStore.concat(['energy']).includes(name)) {
-                    this.getTargetResource(factory, name)
+        if (this.room.storage) {
+            for (let name in this.room.storage.store) {
+                if (factoryStore.concat(terminalStore).includes(name)) {
+                    if (this.getTargetResource(this.room.storage, name)) {
+                        return true
+                    }
                 }
             }
         }
-
     }
 };
