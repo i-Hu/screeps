@@ -16,7 +16,8 @@ const creepExtension = {
         return _.sum(this.store) === 0;
     },
     switch() {
-        if (this.hits < this.hitsMax * 0.6) {
+        if (this.hits < this.hitsMax * 0.8) {
+            this.memory.transfer = "";
             this.moveTo(new RoomPosition(25, 25, this.memory.room))
         } else {
             if
