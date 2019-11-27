@@ -41,13 +41,7 @@ var roleTransferLink = {
             } else if ((creep.store[RESOURCE_ENERGY] > 0 && creep.room.terminal.store[RESOURCE_ENERGY] < 30000)) {
                 creep.fillTerminal()
             } else {
-                for (let name in creep.store) {
-                    if (['Z', 'U', 'O', "L", 'H', "K", 'silicon'].includes(name) && factory && _.sum(factory.store) < 45000 && creep.fillFactory()) {
-                    } else if (['keanium_bar', 'zynthium_bar', 'oxidant', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name) && creep.fillTerminal()) {
-                    } else {
-                        creep.fillStorage()
-                    }
-                }
+                creep.autoFill()
             }
         }
     }

@@ -107,8 +107,16 @@ const creepExtension = {
         return false
     },
     // 其他更多自定义拓展
-
-
+    autoFill() {
+        const factory = this.pos.findClosestByPath(FIND_STRUCTURES, {filter: i => i.structureType === STRUCTURE_FACTORY});
+        for (let name in this.store) {
+            if (['Z', 'U', 'O', "L", 'H', "K", 'silicon'].includes(name) && factory && _.sum(factory.store) < 45000 && this.fillFactory()) {
+            } else if (['keanium_bar', 'zynthium_bar', 'oxidant', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name) && this.fillTerminal()) {
+            } else {
+                this.fillStorage()
+            }
+        }
+    },
     getEnergy() {
         // 收集掉落的能量>墓碑的能量>最近的容器>存储器
         if (!this.getDroppedResource()) {

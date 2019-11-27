@@ -51,6 +51,10 @@ module.exports.loop = function () {
         }
     });
 
+    //化学反应
+    var labs = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES,
+        {filter: {structureType: STRUCTURE_LAB}});
+
 
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
