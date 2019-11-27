@@ -10,7 +10,6 @@ var roleUpgrader = require('./role.upgrader');
 
 var roleBuilder = {
 
-    /** @param {Creep} creep **/
     run: function (creep) {
         // 状态转换
         creep.switch();

@@ -43,43 +43,44 @@ module.exports.loop = function () {
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_LEMERGIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_REDUCTANT);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_KEANIUM_BAR);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_GHODIUM_MELT);
 
     //交易
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'reductant'}).forEach(i => {
-        if (i.price >= 0.45) {
-            Game.market.deal(i.id, 1000, 'W9N49')
+    const sellList = {
+        'reductant': 0.45,
+        'oxidant': 0.35,
+        'zynthium_bar': 0.3,
+        'lemergium_bar': 0.6,
+        'utrium_bar': 0.35,
+        'keanium_bar': 0.35
+    };
+    for (let type in sellList) {
+        Game.market.getAllOrders({type: ORDER_BUY, resourceType: type}).forEach(i => {
+            if (i.price >= sellList[type]) {
+                Game.market.deal(i.id, 1000, 'W9N49')
+            }
+        });
+    }
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'ghodium_melt'}).forEach(i => {
+        if (i.price >= 2.5) {
+            Game.market.deal(i.id, 100, 'W9N49')
         }
     });
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'oxidant'}).forEach(i => {
-        if (i.price >= 0.4) {
-            Game.market.deal(i.id, 1000, 'W9N49')
-        }
-    });
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'zynthiun_bar'}).forEach(i => {
-        if (i.price >= 0.3) {
-            Game.market.deal(i.id, 1000, 'W9N49')
-        }
-    });
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'lemergiun_bar'}).forEach(i => {
-        if (i.price >= 0.6) {
-            Game.market.deal(i.id, 1000, 'W9N49')
-        }
-    });
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'utrium_bar'}).forEach(i => {
-        if (i.price >= 0.35) {
-            Game.market.deal(i.id, 1000, 'W9N49')
-        }
-    });
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'keanium_bar'}).forEach(i => {
-        if (i.price >= 0.35) {
-            Game.market.deal(i.id, 1000, 'W9N49')
-        }
-    });
+
+    //W6发送ZK到W9
+    if (Game.rooms['W6N49'].terminal.store['ZK'] >= 200) {
+        Game.rooms['W6N49'].terminal.send('ZK', 200, 'W9N49');
+    }
 
     //化学反应
-    var labs = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES,
-        {filter: {structureType: STRUCTURE_LAB}});
-
+    const labsW9 = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
+    //U+L
+    labsW9[3].runReaction(labsW9[0], labsW9[4]);
+    //UL+ZK
+    labsW9[2].runReaction(labsW9[1], labsW9[3]);
+    const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
+    //Z+K
+    labsW6[2].runReaction(labsW6[0], labsW6[1]);
 
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];

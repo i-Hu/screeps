@@ -3,6 +3,9 @@ module.exports = function () {
     _.assign(Creep.prototype, creepExtension)
 };
 
+const terminalStore = ["ZK", "UL", 'keanium_bar', 'zynthium_bar', 'oxidant', 'utrium_bar', 'lemergium_bar', 'reductant', 'ghodium_melt'];
+const factoryStore = ['Z', 'U', 'O', "L", 'H', "K", "G", 'silicon'];
+
 // 自定义的 Creep 的拓展
 const creepExtension = {
     // 自定义敌人检测
@@ -109,9 +112,40 @@ const creepExtension = {
     // 其他更多自定义拓展
     autoFill() {
         const factory = this.pos.findClosestByPath(FIND_STRUCTURES, {filter: i => i.structureType === STRUCTURE_FACTORY});
+        const labsW9 = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
+        const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
         for (let name in this.store) {
-            if (['Z', 'U', 'O', "L", 'H', "K", 'silicon'].includes(name) && factory && _.sum(factory.store) < 45000 && this.fillFactory()) {
-            } else if (['keanium_bar', 'zynthium_bar', 'oxidant', 'utrium_bar', 'lemergium_bar', 'reductant'].includes(name) && this.fillTerminal()) {
+            if (this.room.name === 'W9N49') {
+                if (_.sum(labsW9[4].store) < 2000 && name === 'U') {
+                    if (this.fillTargetResource(labsW9[4], 'U')) {
+                        return true
+                    }
+                }
+                if (_.sum(labsW9[0].store) < 2000 && name === 'L') {
+                    if (this.fillTargetResource(labsW9[0], 'L')) {
+                        return true
+                    }
+                }
+                if (_.sum(labsW9[1].store) < 2000 && name === 'ZK') {
+                    if (this.fillTargetResource(labsW9[1], 'ZK')) {
+                        return true
+                    }
+                }
+            }
+            if (this.room.name === 'W6N49') {
+                if (_.sum(labsW6[0].store) < 2000 && name === 'Z') {
+                    if (this.fillTargetResource(labsW6[0], 'Z')) {
+                        return true
+                    }
+                }
+                if (_.sum(labsW6[1].store) < 2000 && name === 'K') {
+                    if (this.fillTargetResource(labsW6[1], 'K')) {
+                        return true
+                    }
+                }
+            }
+            if (factoryStore.includes(name) && factory && _.sum(factory.store) < 45000 && this.fillFactory()) {
+            } else if (terminalStore.includes(name) && this.fillTerminal()) {
             } else {
                 this.fillStorage()
             }
@@ -229,5 +263,83 @@ const creepExtension = {
             return true
         }
         return false
+    },
+    switchResource() {
+        const factory = this.pos.findClosestByPath(FIND_STRUCTURES, {filter: i => i.structureType === STRUCTURE_FACTORY});
+        const labsW9 = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
+        const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
+        //搬运化学反应材料
+        if (this.room.name === 'W9N49') {
+            if (_.sum(labsW9[4].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'U')) {
+                    return true
+                } else if (this.getTargetResource(factory, 'U')) {
+                    return true
+                }
+            }
+            if (_.sum(labsW9[0].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'L')) {
+                    return true
+                } else if (this.getTargetResource(factory, 'L')) {
+                    return true
+                }
+            }
+            if (_.sum(labsW9[1].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'ZK')) {
+                    return true
+                }
+            }
+            if (labsW9[2].store['G'] >= 200) {
+                if (this.getTargetResource(labsW9['2'], 'G')) {
+                    return true
+                }
+            }
+        }
+        if (this.room.name === 'W6N49') {
+            if (_.sum(labsW6[0].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'Z')) {
+                    return true
+                } else if (this.getTargetResource(factory, 'Z')) {
+                    return true
+                }
+            }
+            if (_.sum(labsW6[1].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'K')) {
+                    return true
+                } else if (this.getTargetResource(factory, 'K')) {
+                    return true
+                }
+            }
+            if (labsW6[2].store['ZK'] >= 200) {
+                if (this.getTargetResource(labsW6['2'], 'ZK')) {
+                    return true
+                }
+            }
+        }
+        //工厂和市场都是不包含，存储器是包含
+        if (this.room.storage) {
+            for (let name in this.room.storage.store) {
+                if (factoryStore.concat(terminalStore).includes(name)) {
+                    this.getTargetResource(this.room.storage, name)
+                }
+            }
+        }
+        if (this.room.terminal) {
+            for (let name in this.room.terminal.store) {
+                if (!['Z', 'U', "L", "K"].concat(terminalStore, ['energy']).includes(name) ||
+                    //终端保存2W资源供反应消耗
+                    (['Z', 'U', "L", "K"].includes(name) && this.room.terminal.store[name] > 20000)) {
+                    this.getTargetResource(this.room.terminal, name)
+                }
+            }
+        }
+        if (factory) {
+            for (let name in factory.store) {
+                if (!factoryStore.concat(['energy']).includes(name)) {
+                    this.getTargetResource(factory, name)
+                }
+            }
+        }
+
     }
 };
