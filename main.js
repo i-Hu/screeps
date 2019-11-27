@@ -46,8 +46,33 @@ module.exports.loop = function () {
 
     //交易
     Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'reductant'}).forEach(i => {
+        if (i.price >= 0.45) {
+            Game.market.deal(i.id, 1000, 'W9N49')
+        }
+    });
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'oxidant'}).forEach(i => {
         if (i.price >= 0.4) {
-            Game.market.deal(i.id, i.amount, 'W9N49')
+            Game.market.deal(i.id, 1000, 'W9N49')
+        }
+    });
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'zynthiun_bar'}).forEach(i => {
+        if (i.price >= 0.3) {
+            Game.market.deal(i.id, 1000, 'W9N49')
+        }
+    });
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'lemergiun_bar'}).forEach(i => {
+        if (i.price >= 0.6) {
+            Game.market.deal(i.id, 1000, 'W9N49')
+        }
+    });
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'utrium_bar'}).forEach(i => {
+        if (i.price >= 0.35) {
+            Game.market.deal(i.id, 1000, 'W9N49')
+        }
+    });
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'keanium_bar'}).forEach(i => {
+        if (i.price >= 0.35) {
+            Game.market.deal(i.id, 1000, 'W9N49')
         }
     });
 
