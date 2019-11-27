@@ -42,6 +42,15 @@ module.exports.loop = function () {
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_WIRE);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_LEMERGIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_REDUCTANT);
+    Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_KEANIUM_BAR);
+
+    //交易
+    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'reductant'}).forEach(i => {
+        if (i.price >= 0.4) {
+            Game.market.deal(i.id, i.amount, 'W9N49')
+        }
+    });
+
 
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
@@ -132,7 +141,7 @@ module.exports.loop = function () {
             });
     }
     // 保持建设者数量
-    if (builders2.length < 1) {
+    if (builders2.length < 0) {
         newName = 'Builder' + Game.time;
         console.log('Spawn2 Spawning new builder: ' + newName);
         Game.spawns['Spawn2'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
@@ -239,6 +248,16 @@ module.exports.loop = function () {
                 directions: [BOTTOM, RIGHT]
             });
     }
+    //防止空指针异常
+    if (Game.rooms['W5N49'] && Game.rooms['W5N49'].find(FIND_HOSTILE_CREEPS).length > 0 && attackers.length < 1) {
+        newName = 'Attacker' + Game.time;
+        console.log('Spawning new attacker: ' + newName);
+        Game.spawns['Spawn2'].spawnCreep([MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, ATTACK, MOVE], newName,
+            {
+                memory: {role: 'attacker', room: 'W5N49'},
+                directions: [BOTTOM, RIGHT]
+            });
+    }
     if (healers.length < 0) {
         newName = 'healer' + Game.time;
         console.log('Spawn1 Spawning new healer: ' + newName);
@@ -270,16 +289,16 @@ module.exports.loop = function () {
                 directions: [TOP, RIGHT]
             });
     }
-    const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
-    if (harvestDeposits.length < 1) {
-        newName = 'harvestDeposit' + Game.time;
-        console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
-            {
-                memory: {role: 'harvestDeposit', room: 'W9N49', sourceId: '5dda829b9f32a9a79a45a687'},
-                directions: [TOP, RIGHT]
-            });
-    }
+    // const harvestDeposits = _.filter(Game.creeps, (creep) => creep.memory.role === 'harvestDeposit');
+    // if (harvestDeposits.length < 1) {
+    //     newName = 'harvestDeposit' + Game.time;
+    //     console.log('Spawn1 Spawning new harvestDeposit: ' + newName);
+    //     Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], newName,
+    //         {
+    //             memory: {role: 'harvestDeposit', room: 'W9N49', sourceId: '5dda829b9f32a9a79a45a687'},
+    //             directions: [TOP, RIGHT]
+    //         });
+    // }
 
     for (name in Game.creeps) {
         let creep = Game.creeps[name];
