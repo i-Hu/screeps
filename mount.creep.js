@@ -131,6 +131,11 @@ const creepExtension = {
                         return true
                     }
                 }
+                if (_.sum(labsW9[3].store) < 2000 && name === 'UL') {
+                    if (this.fillTargetResource(labsW9[3], 'UL')) {
+                        return true
+                    }
+                }
             }
             if (this.room.name === 'W6N49') {
                 if (_.sum(labsW6[0].store) < 2000 && name === 'Z') {
@@ -149,6 +154,7 @@ const creepExtension = {
                 //终端保存2W资源供反应消耗
                 (['Z', 'U', "L", "K"].includes(name) && this.room.terminal.store[name] < 20000) &&
                 this.fillTerminal()) {
+                this.fillTerminal()
             } else {
                 this.fillStorage()
             }
@@ -292,8 +298,18 @@ const creepExtension = {
                     return true
                 }
             }
+            if (_.sum(labsW9[3].store) < 2000) {
+                if (this.getTargetResource(this.room.terminal, 'UL')) {
+                    return true
+                }
+            }
             if (labsW9[2].store['G'] >= 200) {
-                if (this.getTargetResource(labsW9['2'], 'G')) {
+                if (this.getTargetResource(labsW9[2], 'G')) {
+                    return true
+                }
+            }
+            if (labsW9[5].store['G'] >= 200) {
+                if (this.getTargetResource(labsW9[5], 'G')) {
                     return true
                 }
             }
@@ -314,7 +330,12 @@ const creepExtension = {
                 }
             }
             if (labsW6[2].store['ZK'] >= 200) {
-                if (this.getTargetResource(labsW6['2'], 'ZK')) {
+                if (this.getTargetResource(labsW6[2], 'ZK')) {
+                    return true
+                }
+            }
+            if (labsW6[3].store['ZK'] >= 200) {
+                if (this.getTargetResource(labsW6[3], 'ZK')) {
                     return true
                 }
             }
@@ -331,11 +352,22 @@ const creepExtension = {
         }
         if (this.room.terminal) {
             for (let name in this.room.terminal.store) {
-                if (!['Z', 'U', "L", "K"].concat(terminalStore, ['energy']).includes(name) ||
-                    //终端保存2W资源供反应消耗
-                    (['Z', 'U', "L", "K"].includes(name) && this.room.terminal.store[name] > 20000)) {
-                    if (this.getTargetResource(this.room.terminal, name)) {
-                        return true
+                if (this.room.name === 'W9N49') {
+                    if (!['U', "L"].concat(terminalStore, ['energy']).includes(name) ||
+                        //终端保存2W资源供反应消耗
+                        (['U', "L"].includes(name) && this.room.terminal.store[name] > 20000)) {
+                        if (this.getTargetResource(this.room.terminal, name)) {
+                            return true
+                        }
+                    }
+                }
+                if (this.room.name === 'W6N49') {
+                    if (!['Z', "K"].concat(terminalStore, ['energy']).includes(name) ||
+                        //终端保存2W资源供反应消耗
+                        (['Z', "K"].includes(name) && this.room.terminal.store[name] > 20000)) {
+                        if (this.getTargetResource(this.room.terminal, name)) {
+                            return true
+                        }
                     }
                 }
             }

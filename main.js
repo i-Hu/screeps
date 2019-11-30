@@ -38,34 +38,37 @@ module.exports.loop = function () {
     //工厂生产
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_ZYNTHIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_OXIDANT);
+    Game.getObjectById('5ddf48ef1112d3a8e784c2d2').produce(RESOURCE_OXIDANT);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_UTRIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_WIRE);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_LEMERGIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_REDUCTANT);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_KEANIUM_BAR);
+    Game.getObjectById('5ddf48ef1112d3a8e784c2d2').produce(RESOURCE_KEANIUM_BAR);
     Game.getObjectById('5dd96ea36852de17f62ee115').produce(RESOURCE_GHODIUM_MELT);
 
     //交易
     const sellList = {
-        'reductant': 0.45,
+        'reductant': 0.3,
         'oxidant': 0.35,
         'zynthium_bar': 0.3,
-        'lemergium_bar': 0.6,
-        'utrium_bar': 0.35,
-        'keanium_bar': 0.35
+        'lemergium_bar': 0.5,
+        'utrium_bar': 0.3,
+        'keanium_bar': 0.3,
+        'ghodium_melt':2.5
     };
     for (let type in sellList) {
-        Game.market.getAllOrders({type: ORDER_BUY, resourceType: type}).forEach(i => {
+        for (let roomName in {'W6N49':1,'W9N49':1}){
+            Game.market.getAllOrders({type: ORDER_BUY, resourceType: type}).forEach(i => {
+            const amount = i.amount >= Game.rooms[roomName].terminal.store[type] ? Game.rooms[roomName].terminal.store[type] : i.amount
             if (i.price >= sellList[type]) {
-                Game.market.deal(i.id, 1000, 'W9N49')
+                Game.market.deal(i.id, amount, roomName)
             }
         });
-    }
-    Game.market.getAllOrders({type: ORDER_BUY, resourceType: 'ghodium_melt'}).forEach(i => {
-        if (i.price >= 2.5) {
-            Game.market.deal(i.id, 100, 'W9N49')
         }
-    });
+
+    }
+
 
     //W6发送ZK到W9
     if (Game.rooms['W6N49'].terminal.store['ZK'] >= 200) {
@@ -78,10 +81,11 @@ module.exports.loop = function () {
     labsW9[3].runReaction(labsW9[0], labsW9[4]);
     //UL+ZK
     labsW9[2].runReaction(labsW9[1], labsW9[3]);
+    labsW9[5].runReaction(labsW9[1], labsW9[3]);
     const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
     //Z+K
     labsW6[2].runReaction(labsW6[0], labsW6[1]);
-
+    labsW6[3].runReaction(labsW6[0], labsW6[1]);
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
