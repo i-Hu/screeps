@@ -12,6 +12,7 @@ const roleTransferLink = require('./role.transfer.link');
 const roleTransferMineral = require('./role.transfer.mineral');
 const tower = require('./tower');
 const mount = require('./mount');
+// Game.market.createOrder({type: ORDER_SELL, resourceType: RESOURCE_GHODIUM, price: 0.001, totalAmount: 10000, roomName: "W1N1"});
 module.exports.loop = function () {
     let roomName;
     let name;
@@ -55,18 +56,24 @@ module.exports.loop = function () {
         'lemergium_bar': 0.5,
         'utrium_bar': 0.3,
         'keanium_bar': 0.3,
-        'ghodium_melt':2.5
+        'ghodium_melt': 2.5
     };
     for (let type in sellList) {
-        for (let roomName in {'W6N49':1,'W9N49':1}){
+        for (let roomName in {'W6N49': 1, 'W9N49': 1}) {
             Game.market.getAllOrders({type: ORDER_BUY, resourceType: type}).forEach(i => {
-            const amount = i.amount >= Game.rooms[roomName].terminal.store[type] ? Game.rooms[roomName].terminal.store[type] : i.amount
-            if (i.price >= sellList[type]) {
-                Game.market.deal(i.id, amount, roomName)
-            }
-        });
+                const amount = i.amount >= Game.rooms[roomName].terminal.store[type] ? Game.rooms[roomName].terminal.store[type] : i.amount
+                if (i.price >= sellList[type]) {
+                    Game.market.deal(i.id, amount, roomName)
+                }
+            });
         }
-
+    }
+    //取消剩余数量为0的订单
+    const orders = Game.market.orders;
+    for (let id in orders) {
+        if (orders[id].remainingAmount === 0) {
+            Game.market.cancelOrder(id)
+        }
     }
 
 
@@ -79,13 +86,15 @@ module.exports.loop = function () {
     const labsW9 = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
     //U+L
     labsW9[3].runReaction(labsW9[0], labsW9[4]);
+    labsW9[2].runReaction(labsW9[0], labsW9[4]);
     //UL+ZK
-    labsW9[2].runReaction(labsW9[1], labsW9[3]);
+    // labsW9[2].runReaction(labsW9[1], labsW9[3]);
     labsW9[5].runReaction(labsW9[1], labsW9[3]);
     const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
     //Z+K
     labsW6[2].runReaction(labsW6[0], labsW6[1]);
     labsW6[3].runReaction(labsW6[0], labsW6[1]);
+    labsW6[4].runReaction(labsW6[0], labsW6[1]);
     //link传输
     let linkFrom = [Game.getObjectById('5dd3ea0ce1f42309fea19eaa'), Game.getObjectById('5dda10a5cb7f3c1e808c9c48')];
     let linkTo = Game.getObjectById('5dd2a406d75e52445a1fa512');
@@ -121,7 +130,7 @@ module.exports.loop = function () {
             });
     }
     //矿物
-    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1 && _.sum(Game.getObjectById('5dd401c990946d17d1495ee5').store) > 0) {
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd401c990946d17d1495ee5').length < 1 && _.sum(Game.getObjectById('5dd401c990946d17d1495ee5').store) > 600) {
         Game.spawns['Spawn1'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
                 memory: {role: 'transferMineral', room: 'W9N49', containerId: '5dd401c990946d17d1495ee5'},
@@ -129,7 +138,7 @@ module.exports.loop = function () {
             });
     }
     //矿物
-    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd94b7189e95c7766a45c52').length < 1 && _.sum(Game.getObjectById('5dd94b7189e95c7766a45c52').store) > 0) {
+    if (_.filter(Game.creeps, (creep) => creep.memory.role === 'transferMineral' && creep.memory.containerId === '5dd94b7189e95c7766a45c52').length < 1 && _.sum(Game.getObjectById('5dd94b7189e95c7766a45c52').store) > 600) {
         Game.spawns['Spawn2'].spawnCreep([CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], 'transferMineral' + Game.time,
             {
                 memory: {role: 'transferMineral', room: 'W6N49', containerId: '5dd94b7189e95c7766a45c52'},
@@ -185,7 +194,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 1) {
+    if (upgraders.length < 2) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,
@@ -367,7 +376,7 @@ module.exports.loop = function () {
             roleHealer.run(creep)
         }
         if (creep.memory.role === 'transferLink') {
-            if (creep.room.energyAvailable < 1350) {
+            if (creep.room.energyAvailable < 1500) {
                 roleTransfer.run(creep)
             } else {
                 roleTransferLink.run(creep)

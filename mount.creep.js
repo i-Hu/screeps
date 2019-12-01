@@ -303,8 +303,8 @@ const creepExtension = {
                     return true
                 }
             }
-            if (labsW9[2].store['G'] >= 200) {
-                if (this.getTargetResource(labsW9[2], 'G')) {
+            if (labsW9[2].store['UL'] >= 200) {
+                if (this.getTargetResource(labsW9[2], 'UL')) {
                     return true
                 }
             }
@@ -339,6 +339,11 @@ const creepExtension = {
                     return true
                 }
             }
+            if (labsW6[4].store['ZK'] >= 200) {
+                if (this.getTargetResource(labsW6[4], 'ZK')) {
+                    return true
+                }
+            }
         }
         //工厂和市场都是不包含，存储器是包含
         if (factory) {
@@ -355,7 +360,7 @@ const creepExtension = {
                 if (this.room.name === 'W9N49') {
                     if (!['U', "L"].concat(terminalStore, ['energy']).includes(name) ||
                         //终端保存2W资源供反应消耗
-                        (['U', "L"].includes(name) && this.room.terminal.store[name] > 20000)) {
+                        (['U', "L"].includes(name) && this.room.terminal.store[name] > 50000)) {
                         if (this.getTargetResource(this.room.terminal, name)) {
                             return true
                         }
@@ -364,7 +369,7 @@ const creepExtension = {
                 if (this.room.name === 'W6N49') {
                     if (!['Z', "K"].concat(terminalStore, ['energy']).includes(name) ||
                         //终端保存2W资源供反应消耗
-                        (['Z', "K"].includes(name) && this.room.terminal.store[name] > 20000)) {
+                        (['Z', "K"].includes(name) && this.room.terminal.store[name] > 50000)) {
                         if (this.getTargetResource(this.room.terminal, name)) {
                             return true
                         }
@@ -383,3 +388,4 @@ const creepExtension = {
         }
     }
 };
+
