@@ -51,7 +51,7 @@ module.exports.loop = function () {
     //交易
     const sellList = {
         'reductant': 0.3,
-        'oxidant': 0.35,
+        'oxidant': 0.3,
         'zynthium_bar': 0.3,
         'lemergium_bar': 0.5,
         'utrium_bar': 0.3,
@@ -86,9 +86,9 @@ module.exports.loop = function () {
     const labsW9 = Game.rooms['W9N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
     //U+L
     labsW9[3].runReaction(labsW9[0], labsW9[4]);
-    labsW9[2].runReaction(labsW9[0], labsW9[4]);
+    // labsW9[2].runReaction(labsW9[0], labsW9[4]);
     //UL+ZK
-    // labsW9[2].runReaction(labsW9[1], labsW9[3]);
+    labsW9[2].runReaction(labsW9[1], labsW9[3]);
     labsW9[5].runReaction(labsW9[1], labsW9[3]);
     const labsW6 = Game.rooms['W6N49'].find(FIND_MY_STRUCTURES, {filter: {structureType: STRUCTURE_LAB}});
     //Z+K
@@ -194,7 +194,7 @@ module.exports.loop = function () {
             });
     }
 
-    if (upgraders.length < 2) {
+    if (upgraders.length < 1) {
         newName = 'Upgrader' + Game.time;
         console.log('Spawn1 Spawning new upgrader: ' + newName);
         Game.spawns['Spawn1'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName,

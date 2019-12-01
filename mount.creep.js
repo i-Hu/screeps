@@ -303,8 +303,8 @@ const creepExtension = {
                     return true
                 }
             }
-            if (labsW9[2].store['UL'] >= 200) {
-                if (this.getTargetResource(labsW9[2], 'UL')) {
+            if (labsW9[2].store['G'] >= 200) {
+                if (this.getTargetResource(labsW9[2], 'G')) {
                     return true
                 }
             }
@@ -360,7 +360,7 @@ const creepExtension = {
                 if (this.room.name === 'W9N49') {
                     if (!['U', "L"].concat(terminalStore, ['energy']).includes(name) ||
                         //终端保存2W资源供反应消耗
-                        (['U', "L"].includes(name) && this.room.terminal.store[name] > 50000)) {
+                        (['U', "L"].includes(name) && this.room.terminal.store[name] > 30000)) {
                         if (this.getTargetResource(this.room.terminal, name)) {
                             return true
                         }
@@ -369,7 +369,7 @@ const creepExtension = {
                 if (this.room.name === 'W6N49') {
                     if (!['Z', "K"].concat(terminalStore, ['energy']).includes(name) ||
                         //终端保存2W资源供反应消耗
-                        (['Z', "K"].includes(name) && this.room.terminal.store[name] > 50000)) {
+                        (['Z', "K"].includes(name) && this.room.terminal.store[name] > 30000)) {
                         if (this.getTargetResource(this.room.terminal, name)) {
                             return true
                         }
